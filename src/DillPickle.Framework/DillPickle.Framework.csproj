@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{99222B69-4839-4C83-AFAA-7BF52B16133B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DillPickle.Framework</RootNamespace>
+    <AssemblyName>DillPickle.Framework</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Executor\ActionStepFinder.cs" />
+    <Compile Include="Executor\ActionStepMethod.cs" />
+    <Compile Include="Executor\ActionStepsClass.cs" />
+    <Compile Include="Executor\Attributes\ActionStepsAttribute.cs" />
+    <Compile Include="Executor\Attributes\GivenAttribute.cs" />
+    <Compile Include="Executor\Attributes\StepAttribute.cs" />
+    <Compile Include="Executor\Attributes\ThenAttribute.cs" />
+    <Compile Include="Executor\Attributes\WhenAttribute.cs" />
+    <Compile Include="Matcher\StepMatch.cs" />
+    <Compile Include="Matcher\StepMatcher.cs" />
+    <Compile Include="Matcher\StringToken.cs" />
+    <Compile Include="Matcher\Token.cs" />
+    <Compile Include="Matcher\VariableToken.cs" />
+    <Compile Include="Parser\Feature.cs" />
+    <Compile Include="Parser\GherkinParseException.cs" />
+    <Compile Include="Parser\GherkinParser.cs" />
+    <Compile Include="Parser\ParseResult.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Parser\Scenario.cs" />
+    <Compile Include="Parser\Step.cs" />
+    <Compile Include="Parser\StepType.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Runner\Api\IListener.cs" />
+    <Compile Include="Runner\DefaultListener.cs" />
+    <Compile Include="Runner\FeatureRunner.cs" />
+    <Compile Include="Runner\Api\IFeatureRunner.cs" />
+    <Compile Include="Runner\Runner.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
