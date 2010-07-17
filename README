@@ -1,0 +1,3 @@
+DillPickle is a slim Gherkin-compliant BDD story runner for .NET.
+
+It lends most of its functionality from NBehave, but adds hooks and stuff.
