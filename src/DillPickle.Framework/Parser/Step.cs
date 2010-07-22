@@ -1,9 +1,12 @@
+using System.Collections.Generic;
+
 namespace DillPickle.Framework.Parser
 {
     public class Step
     {
         Step(string text, string prefix)
         {
+            Parameters = new List<Dictionary<string, string>>();
             Text = text;
             Prefix = prefix;
         }
@@ -11,6 +14,7 @@ namespace DillPickle.Framework.Parser
         public string Text { get; set; }
         public string Prefix { get; set; }
         public StepType StepType { get; set; }
+        public List<Dictionary<string, string>> Parameters { get; set; }
 
         public static Step And(string text, StepType previousStepType)
         {

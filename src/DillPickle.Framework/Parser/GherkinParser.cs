@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DillPickle.Framework.Exceptions;
 
 namespace DillPickle.Framework.Parser
 {
@@ -29,8 +30,9 @@ namespace DillPickle.Framework.Parser
                 Feature currentFeature = null;
                 Scenario currentScenario = null;
                 StepType? mostRecentStepType = null;
+                var tableColumnNames = new List<string>();
 
-                int lineNumber = 0;
+                var lineNumber = 0;
 
                 while ((line = reader.ReadLine()) != null)
                 {
@@ -44,8 +46,9 @@ namespace DillPickle.Framework.Parser
 
                     if (line.StartsWith("@"))
                     {
-                        string[] tokens = line.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                        string invalidTag = tokens.FirstOrDefault(t => !t.StartsWith("@"));
+                        var tokens = line.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        var invalidTag = tokens.FirstOrDefault(t => !t.StartsWith("@"));
+                        
                         if (invalidTag != null)
                         {
                             throw new GherkinParseException(fileName, lineNumber, line,
@@ -53,7 +56,7 @@ namespace DillPickle.Framework.Parser
                                                             invalidTag);
                         }
 
-                        IEnumerable<string> tags = tokens.Select(t => t.TrimStart('@'));
+                        var tags = tokens.Select(t => t.TrimStart('@'));
 
                         accumulatedTags.AddRange(tags);
 
@@ -62,7 +65,7 @@ namespace DillPickle.Framework.Parser
 
                     if (line.StartsWith(FeatureIntroduction, Comparison))
                     {
-                        string featureText = line.Substring(FeatureIntroduction.Length).Trim();
+                        var featureText = line.Substring(FeatureIntroduction.Length).Trim();
                         currentFeature = new Feature(featureText, accumulatedTags);
                         accumulatedTags.Clear();
                         features.Add(currentFeature);
@@ -80,7 +83,7 @@ namespace DillPickle.Framework.Parser
 
                     if (line.StartsWith(ScenarioIntroduction, Comparison))
                     {
-                        string scenarioText = line.Substring(ScenarioIntroduction.Length).Trim();
+                        var scenarioText = line.Substring(ScenarioIntroduction.Length).Trim();
                         currentScenario = new Scenario(scenarioText, accumulatedTags.Concat(currentFeature.Tags));
                         accumulatedTags.Clear();
                         currentFeature.Scenarios.Add(currentScenario);
@@ -110,16 +113,42 @@ namespace DillPickle.Framework.Parser
                         {
                             currentScenario.Steps.Add(Step.Given(line.Substring("given".Length).Trim()));
                             mostRecentStepType = StepType.Given;
+                            tableColumnNames.Clear();
                         }
                         else if (line.StartsWith("when", Comparison))
                         {
                             currentScenario.Steps.Add(Step.When(line.Substring("when".Length).Trim()));
                             mostRecentStepType = StepType.When;
+                            tableColumnNames.Clear();
                         }
                         else if (line.StartsWith("then", Comparison))
                         {
                             currentScenario.Steps.Add(Step.Then(line.Substring("then".Length).Trim()));
                             mostRecentStepType = StepType.Then;
+                            tableColumnNames.Clear();
+                        }
+                        else if (line.StartsWith("|"))
+                        {
+                            var tokens = line.Split('|').Select(s => s.Trim()).ToArray();
+
+                            if (!tableColumnNames.Any())
+                            {
+                                tableColumnNames.AddRange(tokens);
+                            }
+                            else
+                            {
+                                var dict = new Dictionary<string, string>();
+
+                                for(var index = 0; index < tokens.Length; index++)
+                                {
+                                    var key = tableColumnNames[index];
+                                    if (string.IsNullOrEmpty(key)) continue;
+                                    
+                                    dict[key] = tokens[index];
+                                }
+                                
+                                currentScenario.Steps.Last().Parameters.Add(dict);
+                            }
                         }
                         else
                         {

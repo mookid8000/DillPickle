@@ -26,7 +26,7 @@ namespace DillPickle.Tests
         [Test]
         public void CanMatchStepsAndStuff()
         {
-            Step step = Step.Given("i am logged in as an administrator");
+            var step = Step.Given("i am logged in as an administrator");
             var method = new ActionStepMethod(null, new GivenAttribute("i am logged in as an administrator"));
 
             Assert.IsTrue(matcher.GetMatch(step, method).IsMatch);
@@ -35,10 +35,10 @@ namespace DillPickle.Tests
         [Test]
         public void CanMatchWhenMultipleParametersAreInvolved()
         {
-            Step step = Step.Given("i click BigButton 10 times frantically");
+            var step = Step.Given("i click BigButton 10 times frantically");
             var method = new ActionStepMethod(null, new GivenAttribute("i click $controlName $count times $how"));
 
-            StepMatch match = matcher.GetMatch(step, method);
+            var match = matcher.GetMatch(step, method);
 
             Assert.IsTrue(match.IsMatch);
 
@@ -50,10 +50,10 @@ namespace DillPickle.Tests
         [Test]
         public void CanMatchWhenSimpleParameterIsInvolved()
         {
-            Step step = Step.Given("i click 5 times");
+            var step = Step.Given("i click 5 times");
             var method = new ActionStepMethod(null, new GivenAttribute("i click $count times"));
 
-            StepMatch match = matcher.GetMatch(step, method);
+            var match = matcher.GetMatch(step, method);
 
             Assert.IsTrue(match.IsMatch);
             var variableToken = (VariableToken) match.Tokens[2];
@@ -64,7 +64,7 @@ namespace DillPickle.Tests
         [Test]
         public void DoesNotMatchWhenTextIsDifferent()
         {
-            Step step = Step.Given("i am logged in as an administrator");
+            var step = Step.Given("i am logged in as an administrator");
             var method = new ActionStepMethod(null, new GivenAttribute("i am logged in as a administrator"));
 
             Assert.IsFalse(matcher.GetMatch(step, method).IsMatch);
@@ -73,7 +73,7 @@ namespace DillPickle.Tests
         [Test]
         public void WorksWithMultipleQuotedAndNonQuotedStringIsAnExtremelyComplexSetUpThatReallyShouldNeverHappen()
         {
-            Step step = Step.Given(@"i am punching ""hello there, my name is Joe!"""
+            var step = Step.Given(@"i am punching ""hello there, my name is Joe!"""
                                    + @" into Word2, which actually was better than"
                                    + @" WordPerfect - mostly because of ""WYSIWYG"", though");
 
@@ -83,7 +83,7 @@ namespace DillPickle.Tests
 
             var method = new ActionStepMethod(null, attr);
 
-            StepMatch match = matcher.GetMatch(step, method);
+            var match = matcher.GetMatch(step, method);
 
             Assert.IsTrue(match.IsMatch);
             AssertVar(match.Tokens[3], "g", "hello there, my name is Joe!");
@@ -95,10 +95,10 @@ namespace DillPickle.Tests
         [Test]
         public void WorksWithQuotedVariablesAndValuesAsWell()
         {
-            Step step = Step.Given(@"i type ""hello there"" in TextBoxGreeting");
+            var step = Step.Given(@"i type ""hello there"" in TextBoxGreeting");
             var method = new ActionStepMethod(null, new GivenAttribute(@"i type ""$secretText"" in $textBoxName"));
 
-            StepMatch match = matcher.GetMatch(step, method);
+            var match = matcher.GetMatch(step, method);
 
             Assert.IsTrue(match.IsMatch);
             AssertVar(match.Tokens[2], "secretText", "hello there");

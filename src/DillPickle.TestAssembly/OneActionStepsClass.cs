@@ -6,14 +6,10 @@ namespace DillPickle.TestAssembly
     [ActionSteps]
     public class OneActionStepsClass : IDisposable
     {
-        #region IDisposable Members
-
         public void Dispose()
         {
             Console.WriteLine("DISPOSE!");
         }
-
-        #endregion
 
         [Given("I am pretty $condition")]
         public void GivenPrettyTired(string condition)

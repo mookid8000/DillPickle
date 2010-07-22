@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using DillPickle.Framework.Exceptions;
 using DillPickle.Framework.Executor;
 using DillPickle.Framework.Matcher;
 using DillPickle.Framework.Parser;
@@ -12,8 +13,6 @@ namespace DillPickle.Framework.Runner
     public class FeatureRunner : IFeatureRunner
     {
         readonly List<IListener> listeners = new List<IListener>();
-
-        #region IFeatureRunner Members
 
         public FeatureResult Run(Feature feature, Type[] types)
         {
@@ -42,7 +41,7 @@ namespace DillPickle.Framework.Runner
                                       })
                 .ToList();
 
-            Dictionary<Type, object> executionObjects = matches
+            var executionObjects = matches
                 .Select(m => m.Type)
                 .Distinct()
                 .Select(t => new
@@ -54,23 +53,23 @@ namespace DillPickle.Framework.Runner
 
             try
             {
-                foreach (Scenario scenario in feature.Scenarios)
+                foreach (var scenario in feature.Scenarios)
                 {
-                    Scenario currentScenario = scenario;
+                    var currentScenario = scenario;
                     listeners.ForEach(l => l.BeforeScenario(feature, currentScenario));
 
                     var scenarioResult = new ScenarioResult(scenario.Headline);
                     featureResult.ScenarioResults.Add(scenarioResult);
 
-                    foreach (Step step in scenario.Steps)
+                    foreach (var step in scenario.Steps)
                     {
-                        Step currentStep = step;
+                        var currentStep = step;
                         listeners.ForEach(l => l.BeforeStep(feature, currentScenario, currentStep));
 
                         var stepResult = new StepResult(step.Text);
                         scenarioResult.StepResults.Add(stepResult);
 
-                        Step stepToMatch = step;
+                        var stepToMatch = step;
                         var method = matches.FirstOrDefault(m => m.Match.Step == stepToMatch
                                                                  && m.Match.IsMatch);
 
@@ -82,9 +81,9 @@ namespace DillPickle.Framework.Runner
                         {
                             try
                             {
-                                object targetObject = executionObjects[method.Type];
-                                object[] parameters = GenerateParameterList(method.ActionStepMethod, method.Match);
-                                MethodInfo methodInfo = method.ActionStepMethod.MethodInfo;
+                                var targetObject = executionObjects[method.Type];
+                                var parameters = GenerateParameterList(method.ActionStepMethod, method.Match);
+                                var methodInfo = method.ActionStepMethod.MethodInfo;
 
                                 methodInfo.Invoke(targetObject, parameters);
 
@@ -116,8 +115,6 @@ namespace DillPickle.Framework.Runner
             return featureResult;
         }
 
-        #endregion
-
         object[] GenerateParameterList(ActionStepMethod method, StepMatch match)
         {
             var parameters = method.MethodInfo.GetParameters()
@@ -130,7 +127,19 @@ namespace DillPickle.Framework.Runner
             return parameters
                 .Select(p =>
                             {
-                                VariableToken token = match.Tokens
+                                if (p.Type == typeof(List<Dictionary<string,string>>))
+                                {
+                                    return match.Step.Parameters;
+                                }
+                                
+                                if (p.Type.IsArray && p.Type.GetArrayRank() == 1)
+                                {
+                                    var elementType = p.Type.GetElementType();
+                                    var arrayOfElements = Deserialize(elementType, match.Step.Parameters);
+                                    return arrayOfElements;
+                                }
+
+                                var token = match.Tokens
                                     .Where(t => t is VariableToken)
                                     .Cast<VariableToken>()
                                     .FirstOrDefault(t => t.Name == p.Name);
@@ -146,24 +155,40 @@ namespace DillPickle.Framework.Runner
                                         method.Text);
                                 }
 
-                                object value = Convert.ChangeType(token.Value, p.Type);
+                                var value = Convert.ChangeType(token.Value, p.Type);
 
                                 return value;
                             })
                 .ToArray();
         }
 
+        object Deserialize(Type type, IEnumerable<Dictionary<string, string>> parameters)
+        {
+            var array = Array.CreateInstance(type, parameters.Count());
+
+            var objects = parameters
+                .Select(row => PopulateInstance(Activator.CreateInstance(type), row))
+                .ToArray();
+
+            Array.Copy(objects, array, objects.Length);
+
+            return array;
+        }
+
+        object PopulateInstance(object instance, Dictionary<string, string> dictionary)
+        {
+            foreach(var kvp in dictionary)
+            {
+                var property = instance.GetType().GetProperty(kvp.Key);
+                property.SetValue(instance, kvp.Value, null);
+            }
+
+            return instance;
+        }
+
         public void AddListener(IListener listener)
         {
             listeners.Add(listener);
-        }
-    }
-
-    public class FeatureExecutionException : Exception
-    {
-        public FeatureExecutionException(string message, params object[] objs)
-            : base(string.Format(message, objs))
-        {
         }
     }
 }

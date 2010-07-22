@@ -5,8 +5,6 @@ namespace DillPickle.Framework.Runner
 {
     public class DefaultListener : IListener
     {
-        #region IListener Members
-
         public virtual void BeforeFeature(Feature feature)
         {
         }
@@ -30,7 +28,5 @@ namespace DillPickle.Framework.Runner
         public virtual void AfterFeature(Feature feature, FeatureResult result)
         {
         }
-
-        #endregion
     }
 }

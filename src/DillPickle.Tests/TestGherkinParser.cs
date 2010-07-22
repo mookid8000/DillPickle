@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 using DillPickle.Framework.Parser;
 
@@ -24,7 +23,7 @@ namespace DillPickle.Tests
         [Test]
         public void CanParseTagsAsWell()
         {
-            ParseResult result = parser.Parse(
+            var result = parser.Parse(
                 @"
 @business @something
 Feature: Some terse yet descriptive text of what is desired
@@ -39,14 +38,14 @@ Feature: Some terse yet descriptive text of what is desired
       Then some testable outcome is achieved
 ");
 
-            Feature feature = result.Features[0];
+            var feature = result.Features[0];
 
-            List<string> tags = feature.Tags.OrderBy(t => t).ToList();
+            var tags = feature.Tags.OrderBy(t => t).ToList();
             Assert.AreEqual(2, tags.Count);
             Assert.AreEqual("business", tags[0]);
             Assert.AreEqual("something", tags[1]);
 
-            Scenario scenario = feature.Scenarios[0];
+            var scenario = feature.Scenarios[0];
 
             tags = scenario.Tags.OrderBy(t => t).ToList();
             Assert.AreEqual(3, tags.Count);
@@ -58,7 +57,7 @@ Feature: Some terse yet descriptive text of what is desired
         [Test]
         public void CanParseValidGherkinStuffGood()
         {
-            ParseResult result = parser.Parse(
+            var result = parser.Parse(
                 @"
  Feature: Some terse yet descriptive text of what is desired
    In order to realize a named business value
@@ -80,7 +79,7 @@ Feature: Some terse yet descriptive text of what is desired
       Then some testable outcome is achieved
 ");
 
-            Feature feature = result.Features[0];
+            var feature = result.Features[0];
 
             Assert.AreEqual("Some terse yet descriptive text of what is desired", feature.Headline);
             Assert.AreEqual(
@@ -92,8 +91,8 @@ I want to gain some beneficial outcome which furthers the goal
 
             Assert.AreEqual(2, feature.Scenarios.Count);
 
-            Scenario scenario1 = feature.Scenarios[0];
-            List<Step> scenario1Steps = scenario1.Steps;
+            var scenario1 = feature.Scenarios[0];
+            var scenario1Steps = scenario1.Steps;
 
             Assert.AreEqual("Some determinable business situation", scenario1.Headline);
             Assert.AreEqual(7, scenario1Steps.Count);
@@ -106,8 +105,8 @@ I want to gain some beneficial outcome which furthers the goal
             AssertStep(scenario1Steps[5], StepType.Then, "some testable outcome is achieved");
             AssertStep(scenario1Steps[6], StepType.Then, "something else we can check happens too");
 
-            Scenario scenario2 = feature.Scenarios[1];
-            List<Step> scenario2Steps = scenario2.Steps;
+            var scenario2 = feature.Scenarios[1];
+            var scenario2Steps = scenario2.Steps;
 
             Assert.AreEqual("A different situation", scenario2.Headline);
             Assert.AreEqual(3, scenario2Steps.Count);
@@ -120,7 +119,7 @@ I want to gain some beneficial outcome which furthers the goal
         [Test]
         public void DoesNotAccumulateTagsTooLong()
         {
-            ParseResult result = parser.Parse(
+            var result = parser.Parse(
                 @"
 @business @something
 Feature: Some terse yet descriptive text of what is desired
@@ -152,7 +151,7 @@ Feature: Some terse yet descriptive text of what is desired
       Then some testable outcome is achieved
 ");
 
-            Feature feature1 = result.Features[0];
+            var feature1 = result.Features[0];
             Assert.AreEqual(2, feature1.Tags.Count);
 
             Assert.AreEqual(3, feature1.Scenarios[0].Tags.Count);
@@ -160,7 +159,7 @@ Feature: Some terse yet descriptive text of what is desired
             Assert.AreEqual(3, feature1.Scenarios[1].Tags.Count);
             Assert.IsTrue(feature1.Scenarios[1].Tags.Any(t => t == "notImportant"));
 
-            Feature feature2 = result.Features[1];
+            var feature2 = result.Features[1];
             Assert.AreEqual(1, feature2.Tags.Count);
             Assert.IsTrue(feature1.Tags.Any(t => t == "something"));
 
@@ -171,7 +170,7 @@ Feature: Some terse yet descriptive text of what is desired
         [Test]
         public void DoesNotPutTagOfSecondFeatureIntoLastScenarioOfPrecedingScenario()
         {
-            ParseResult result = parser.Parse(
+            var result = parser.Parse(
                 @"
 Feature: Some terse yet descriptive text of what is desired
  
@@ -191,6 +190,81 @@ Feature: Some terse yet descriptive text of what is desired
 
             Assert.AreEqual(1, result.Features[1].Tags.Count);
             Assert.AreEqual("something", result.Features[1].Tags[0]);
+        }
+
+        [Test]
+        public void UnderstandsMultilineStepArguments()
+        {
+            var result = parser.Parse(
+                @"
+Feature: Whatever
+
+    Scenario: Check if it works
+        
+    Given the following users:
+        | username  | password  | birthYear |
+        | joe       | secret    | 1979      |
+        | mookid    | yay!      | 1979      |
+    When I log in as mookid
+    Then I get a brand spanking new session fo shizzle
+");
+
+            var scenario = result.Features[0].Scenarios[0];
+            Assert.AreEqual(3, scenario.Steps.Count);
+            
+            var step = scenario.Steps[0];
+            Assert.AreEqual(StepType.Given, step.StepType);
+            Assert.AreEqual(2, step.Parameters.Count);
+        }
+
+        [Test]
+        public void UnderstandsMultilineStepArgumentsAndDoesNotChokeIfMultipleTablesAreGiven()
+        {
+            var result = parser.Parse(
+                @"
+Feature: Whatever
+
+    Scenario: Check if it works
+        
+    Given the following users:
+        | username  | password  | birthYear |
+        | joe       | secret    | 1979      |
+        | mookid o c| yay!      | 1979      |
+    When I log in as 
+        | username  | password  |
+        | joe       | secret    |
+        | mookid o c| yay!      |
+    Then I get a brand spanking new session fo shizzle for
+        | username  |
+        | joe       |
+        | mookid o c|
+");
+
+            var scenario = result.Features[0].Scenarios[0];
+            Assert.AreEqual(3, scenario.Steps.Count);
+
+            var step = scenario.Steps[0];
+            Assert.AreEqual(StepType.Given, step.StepType);
+            Assert.AreEqual(2, step.Parameters.Count);
+            var parameters = step.Parameters;
+            
+            var firstRow = parameters[0];
+            Assert.AreEqual("joe", firstRow["username"]);
+            Assert.AreEqual("secret", firstRow["password"]);
+            Assert.AreEqual("1979", firstRow["birthYear"]);
+  
+            var nextRow = parameters[1];
+            Assert.AreEqual("mookid o c", nextRow["username"]);
+            Assert.AreEqual("yay!", nextRow["password"]);
+            Assert.AreEqual("1979", nextRow["birthYear"]);
+
+            step = scenario.Steps[1];
+            Assert.AreEqual(StepType.When, step.StepType);
+            Assert.AreEqual(2, step.Parameters.Count);
+
+            step = scenario.Steps[2];
+            Assert.AreEqual(StepType.Then, step.StepType);
+            Assert.AreEqual(2, step.Parameters.Count);
         }
     }
 }
