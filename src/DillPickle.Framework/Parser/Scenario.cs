@@ -29,4 +29,14 @@ namespace DillPickle.Framework.Parser
             get { return tags; }
         }
     }
+
+    public class ScenarioOutline : Scenario
+    {
+        public ScenarioOutline(string headline, IEnumerable<string> accumulatedTags) : base(headline, accumulatedTags)
+        {
+            Examples = new List<Dictionary<string, string>>();
+        }
+
+        public List<Dictionary<string, string>> Examples { get; set; }
+    }
 }

@@ -266,5 +266,91 @@ Feature: Whatever
             Assert.AreEqual(StepType.Then, step.StepType);
             Assert.AreEqual(2, step.Parameters.Count);
         }
+
+        [Test]
+        public void CanParseScenarioOutlines()
+        {
+            var result = parser.Parse(
+                @"
+Scenario Outline: eating
+  Given there are <start> cucumbers
+  When I eat <eat> cucumbers
+  Then I should have <left> cucumbers
+
+  Examples:
+    | start | eat | left |
+    |  12   |  5  |  7   |
+    |  20   |  5  |  15  |
+
+");
+
+            Assert.AreEqual(1, result.Features.Count);
+            Assert.AreEqual(1, result.Features[0].Scenarios.Count);
+            var scenario = (ScenarioOutline) result.Features[0].Scenarios[0];
+            Assert.AreEqual(2, scenario.Examples.Count);
+        }
+
+        [Test]
+        public void CanParseMultilineStepArgumentsAndScenarioOutlineInSameScenario()
+        {
+            var result = parser.Parse(
+                @"
+Scenario Outline: eating
+  Given there are <start> cucumbers
+    and the following users exist:
+        | name  | age   |
+        | joe   | 30    |
+        | moe   | 31    |
+  When I eat <eat> cucumbers
+  Then I should have <left> cucumbers
+
+  Examples:
+    | start | eat | left |
+    |  12   |  5  |  7   |
+    |  20   |  5  |  15  |
+
+Scenario Outline: eating II
+  Given there are <start> cucumbers
+    and the following users exist:
+        | name  | age   |
+        | joe   | 30    |
+        | moe   | 31    |
+  When I eat <eat> cucumbers
+  Then I should have <left> cucumbers
+
+  Examples:
+    | start | eat | left |
+    |  12   |  5  |  7   |
+    |  20   |  5  |  15  |
+
+");
+            AssertScenario((ScenarioOutline)result.Features[0].Scenarios[0]);
+            AssertScenario((ScenarioOutline)result.Features[0].Scenarios[1]);
+        }
+
+        void AssertScenario(ScenarioOutline scenario)
+        {
+            var step = scenario.Steps[1];
+            
+            Assert.AreEqual(StepType.Given, step.StepType);
+            
+            var parameters = step.Parameters;
+            
+            Assert.AreEqual(2, parameters.Count);
+            Assert.AreEqual("joe", parameters[0]["name"]);
+            Assert.AreEqual("30", parameters[0]["age"]);
+            Assert.AreEqual("moe", parameters[1]["name"]);
+            Assert.AreEqual("31", parameters[1]["age"]);
+
+            var examples = scenario.Examples;
+
+            Assert.AreEqual(2, examples.Count);
+            Assert.AreEqual("12", examples[0]["start"]);
+            Assert.AreEqual("5", examples[0]["eat"]);
+            Assert.AreEqual("7", examples[0]["left"]);
+            Assert.AreEqual("20", examples[1]["start"]);
+            Assert.AreEqual("5", examples[1]["eat"]);
+            Assert.AreEqual("15", examples[1]["left"]);
+        }
     }
 }

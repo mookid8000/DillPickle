@@ -11,6 +11,8 @@ namespace DillPickle.Framework.Parser
         const StringComparison Comparison = StringComparison.CurrentCultureIgnoreCase;
         const string FeatureIntroduction = "feature:";
         const string ScenarioIntroduction = "scenario:";
+        const string ScenarioOutlineIntroduction = "scenario outline:";
+        const string ExamplesIntroduction = "examples:";
 
         public ParseResult Parse(string text)
         {
@@ -31,6 +33,7 @@ namespace DillPickle.Framework.Parser
                 Scenario currentScenario = null;
                 StepType? mostRecentStepType = null;
                 var tableColumnNames = new List<string>();
+                var parsingExamples = false;
 
                 var lineNumber = 0;
 
@@ -83,11 +86,31 @@ namespace DillPickle.Framework.Parser
 
                     if (line.StartsWith(ScenarioIntroduction, Comparison))
                     {
-                        var scenarioText = line.Substring(ScenarioIntroduction.Length).Trim();
+                        var scenarioText = line.Substring(line.IndexOf(":") + 1).Trim();
                         currentScenario = new Scenario(scenarioText, accumulatedTags.Concat(currentFeature.Tags));
                         accumulatedTags.Clear();
+                        tableColumnNames.Clear();
                         currentFeature.Scenarios.Add(currentScenario);
                         mostRecentStepType = null;
+                        parsingExamples = false;
+                        continue;
+                    }
+
+                    if (line.StartsWith(ScenarioOutlineIntroduction, Comparison))
+                    {
+                        var scenarioText = line.Substring(line.IndexOf(":") + 1).Trim();
+                        currentScenario = new ScenarioOutline(scenarioText, accumulatedTags.Concat(currentFeature.Tags));
+                        accumulatedTags.Clear();
+                        tableColumnNames.Clear();
+                        currentFeature.Scenarios.Add(currentScenario);
+                        mostRecentStepType = null;
+                        parsingExamples = false;
+                        continue;
+                    }
+
+                    if (line.StartsWith(ExamplesIntroduction, Comparison))
+                    {
+                        parsingExamples = true;
                         continue;
                     }
 
@@ -146,8 +169,15 @@ namespace DillPickle.Framework.Parser
                                     
                                     dict[key] = tokens[index];
                                 }
-                                
-                                currentScenario.Steps.Last().Parameters.Add(dict);
+
+                                if (parsingExamples)
+                                {
+                                    ((ScenarioOutline)currentScenario).Examples.Add(dict);
+                                }
+                                else
+                                {
+                                    currentScenario.Steps.Last().Parameters.Add(dict);
+                                }
                             }
                         }
                         else
