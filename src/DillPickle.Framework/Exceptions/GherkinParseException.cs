@@ -14,5 +14,13 @@ namespace DillPickle.Framework.Exceptions
                                  string.Format(message, objs))
         {
         }
+
+        public GherkinParseException(string fileName, string message, params object[] objs)
+            : base(@"Error parsing file {0}
+
+{1}", fileName, string.Format(message, objs))
+        {
+
+        }
     }
 }

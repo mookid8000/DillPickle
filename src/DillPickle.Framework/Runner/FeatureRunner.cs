@@ -27,7 +27,8 @@ namespace DillPickle.Framework.Runner
             var matcher = new StepMatcher();
             var finder = new ActionStepFinder();
 
-            var matches = (from scenario in feature.Scenarios
+            var matches = (from scenarioBase in feature.Scenarios
+                           from scenario in scenarioBase.GetExecutableScenarios()
                            from step in scenario.Steps
                            from actionStepClass in finder.Find(types)
                            let requiredType = actionStepClass.Type
@@ -42,6 +43,7 @@ namespace DillPickle.Framework.Runner
                 .ToList();
 
             var executionObjects = matches
+                .Where(m => m.Match.IsMatch)
                 .Select(m => m.Type)
                 .Distinct()
                 .Select(t => new
@@ -53,7 +55,7 @@ namespace DillPickle.Framework.Runner
 
             try
             {
-                foreach (var scenario in feature.Scenarios)
+                foreach (var scenario in feature.Scenarios.SelectMany(s => s.GetExecutableScenarios()))
                 {
                     var currentScenario = scenario;
                     listeners.ForEach(l => l.BeforeScenario(feature, currentScenario));
@@ -88,6 +90,10 @@ namespace DillPickle.Framework.Runner
                                 methodInfo.Invoke(targetObject, parameters);
 
                                 stepResult.Result = Result.Success;
+                            }
+                            catch (FeatureExecutionException)
+                            {
+                                throw;
                             }
                             catch (Exception e)
                             {
@@ -134,9 +140,7 @@ namespace DillPickle.Framework.Runner
                                 
                                 if (p.Type.IsArray && p.Type.GetArrayRank() == 1)
                                 {
-                                    var elementType = p.Type.GetElementType();
-                                    var arrayOfElements = Deserialize(elementType, match.Step.Parameters);
-                                    return arrayOfElements;
+                                    return Deserialize(p.Type.GetElementType(), match.Step.Parameters);
                                 }
 
                                 var token = match.Tokens
@@ -175,12 +179,42 @@ namespace DillPickle.Framework.Runner
             return array;
         }
 
+        const BindingFlags DeserializationPropertyBindingFlags = BindingFlags.IgnoreCase
+                                                                 | BindingFlags.Public
+                                                                 | BindingFlags.Instance;
+
         object PopulateInstance(object instance, Dictionary<string, string> dictionary)
         {
             foreach(var kvp in dictionary)
             {
-                var property = instance.GetType().GetProperty(kvp.Key);
-                property.SetValue(instance, kvp.Value, null);
+                var type = instance.GetType();
+                var propertyName = kvp.Key;
+                var property = type.GetProperty(propertyName, DeserializationPropertyBindingFlags);
+
+                if (property == null)
+                {
+                    throw new FeatureExecutionException(
+                        "Property corresponding to table column '{0}' was not found on object of type {1}",
+                        propertyName,
+                        type.FullName);
+                }
+
+                var value = kvp.Value;
+
+                try
+                {
+                    property.SetValue(instance, Convert.ChangeType(value, property.PropertyType), null);
+                }
+                catch(Exception e)
+                {
+                    throw new FeatureExecutionException(
+                        "Error converting '{0}' to value of type {1} (property named '{2}' on object of type {3}): {4}",
+                        value,
+                        property.PropertyType.Name,
+                        property.Name,
+                        type.FullName,
+                        e);
+                }
             }
 
             return instance;

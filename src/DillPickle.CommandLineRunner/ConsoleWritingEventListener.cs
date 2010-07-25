@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using DillPickle.Framework.Parser;
 using DillPickle.Framework.Runner;
+using DillPickle.Framework.Runner.Api;
 
 namespace DillPickle.CommandLineRunner
 {

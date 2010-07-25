@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnotherActionStepsClass.cs" />
+    <Compile Include="CalculatorActionSteps.cs" />
     <Compile Include="OneActionStepsClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -60,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Features\02_Pickles_should_work.feature" />
+    <None Include="Features\03_Pickles_should_work.feature" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

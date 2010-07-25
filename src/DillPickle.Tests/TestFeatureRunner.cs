@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DillPickle.Framework.Runner.Api;
 using NUnit.Framework;
 using DillPickle.Framework.Executor.Attributes;
 using DillPickle.Framework.Parser;
@@ -20,13 +21,88 @@ namespace DillPickle.Tests
         }
 
         [Test]
+        public void CanRunFeatureWithScenarioOutline()
+        {
+            var feature = new Feature("feature", NoTags());
+            feature.Scenarios.Add(new ScenarioOutline("outline", NoTags())
+                                      {
+                                          Steps =
+                                              {
+                                                  Step.Given("I have <have> cucumbers"),
+                                                  Step.When("I eat <eat> cucumbers"),
+                                                  Step.Then("I have <left> cucumbers left"),
+                                              },
+                                          Examples =
+                                              {
+                                                  new Dictionary<string, string>
+                                                      {
+                                                          {"have", "30"},
+                                                          {"eat", "20"},
+                                                          {"left", "10"},
+                                                      },
+                                                  new Dictionary<string, string>
+                                                      {
+                                                          {"have", "15"},
+                                                          {"eat", "2"},
+                                                          {"left", "13"},
+                                                      },
+                                              }
+                                      });
+
+            runner.Run(feature, new[]{typeof(Cucumbulator)});
+
+            Assert.AreEqual(2, Cucumbulator.Calls.Count);
+            
+            var dict1 = Cucumbulator.Calls[0];
+            Assert.AreEqual(30, dict1["have"]);
+            Assert.AreEqual(20, dict1["eat"]);
+            Assert.AreEqual(10, dict1["left"]);
+            
+            var dict2 = Cucumbulator.Calls[1];
+            Assert.AreEqual(15, dict2["have"]);
+            Assert.AreEqual(2, dict2["eat"]);
+            Assert.AreEqual(13, dict2["left"]);
+        }
+
+        [ActionSteps]
+        public class Cucumbulator
+        {
+            public static List<Dictionary<string, int>> Calls = new List<Dictionary<string, int>>();
+
+            static int _counter;
+
+            [Given("I have $cukeCount cucumbers")]
+            public void GivenHaveCukes(int cukeCount)
+            {
+                Console.WriteLine("Have {0} cukes", cukeCount);
+                Calls.Add(new Dictionary<string, int>());
+                Calls[_counter]["have"] = cukeCount;
+            }
+
+            [When("I eat $cukeCount cucumbers")]
+            public void WhenEating(int cukeCount)
+            {
+                Console.WriteLine("Eating {0} cukes", cukeCount);
+                Calls[_counter]["eat"] = cukeCount;
+            }
+
+            [Then("I have $cukeCount cucumbers left")]
+            public void ThenHave(int cukeCount)
+            {
+                Console.WriteLine("Then I have {0} cukes", cukeCount);
+                Calls[_counter]["left"] = cukeCount;
+                _counter++;
+            }
+        }
+
+        [Test]
         public void CanRunFeature()
         {
             var feature = new Feature("feature", NoTags())
                               {
                                   Scenarios =
                                       {
-                                          new Scenario("scenario", NoTags())
+                                          new ExecutableScenario("scenario", NoTags())
                                               {
                                                   Steps =
                                                       {
@@ -79,15 +155,17 @@ namespace DillPickle.Tests
             when.Parameters.Add(new Dictionary<string, string>
                                     {
                                         {"username", "joe"},
-                                        {"password", "secret"}
+                                        {"password", "secret"},
+                                        {"age", "31"},
                                     });
             when.Parameters.Add(new Dictionary<string, string>
                                     {
                                         {"username", "mookid"},
-                                        {"password", "yay!"}
+                                        {"password", "yay!"},
+                                        {"age", "29"},
                                     });
 
-            var scenario = new Scenario("woot!", NoTags())
+            var scenario = new ExecutableScenario("woot!", NoTags())
                                {
                                    Steps = {given, when}
                                };
@@ -107,10 +185,12 @@ namespace DillPickle.Tests
 
             var arr = ClassWithMultilineStepArguments.When;
             Assert.IsNotNull(arr);
-            Assert.AreEqual("joe", arr[0].username);
-            Assert.AreEqual("secret", arr[0].password);
-            Assert.AreEqual("mookid", arr[1].username);
-            Assert.AreEqual("yay!", arr[1].password);
+            Assert.AreEqual("joe", arr[0].Username);
+            Assert.AreEqual("secret", arr[0].Password);
+            Assert.AreEqual(31, arr[0].Age);
+            Assert.AreEqual("mookid", arr[1].Username);
+            Assert.AreEqual("yay!", arr[1].Password);
+            Assert.AreEqual(29, arr[1].Age);
         }
 
         [ActionSteps]
@@ -134,8 +214,9 @@ namespace DillPickle.Tests
 
             public class UserLoggedIn
             {
-                public string username { get; set; }
-                public string password { get; set; }
+                public string Username { get; set; }
+                public string Password { get; set; }
+                public int Age { get; set; }
             }
         }
 

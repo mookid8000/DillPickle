@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using DillPickle.Framework.Exceptions;
 
 namespace DillPickle.Framework.Parser
@@ -87,7 +88,7 @@ namespace DillPickle.Framework.Parser
                     if (line.StartsWith(ScenarioIntroduction, Comparison))
                     {
                         var scenarioText = line.Substring(line.IndexOf(":") + 1).Trim();
-                        currentScenario = new Scenario(scenarioText, accumulatedTags.Concat(currentFeature.Tags));
+                        currentScenario = new ExecutableScenario(scenarioText, accumulatedTags.Concat(currentFeature.Tags));
                         accumulatedTags.Clear();
                         tableColumnNames.Clear();
                         currentFeature.Scenarios.Add(currentScenario);
@@ -110,7 +111,13 @@ namespace DillPickle.Framework.Parser
 
                     if (line.StartsWith(ExamplesIntroduction, Comparison))
                     {
+                        if (!(currentScenario is ScenarioOutline))
+                        {
+                            throw new GherkinParseException(fileName, lineNumber, line, "Cannot specify examples in an ordinary scenario. Please use the 'Scenario outline:' introduction if you mean to specify examples");
+                        }
+
                         parsingExamples = true;
+                        
                         continue;
                     }
 
@@ -194,7 +201,50 @@ namespace DillPickle.Framework.Parser
                 }
             }
 
+            features.ForEach(feature => AssertConsistency(feature, fileName));
+
             return new ParseResult(features);
+        }
+
+        void AssertConsistency(Feature feature, string fileName)
+        {
+            feature.Scenarios.ForEach(scenario => AssertConsistency(scenario, fileName));
+        }
+
+        void AssertConsistency(Scenario scenario, string fileName)
+        {
+            if (scenario is ScenarioOutline)
+            {
+                var outline = (ScenarioOutline)scenario;
+
+                AssertThatExamplesAreGiven(outline, fileName);
+                AssertThatPlaceholdersCanBeResolvedWithThisTable(outline, fileName);
+            }
+        }
+
+        void AssertThatExamplesAreGiven(ScenarioOutline outline, string fileName)
+        {
+            if (outline.Examples.Count == 0)
+            {
+                throw new GherkinParseException(fileName, "In a scenario outline, a table of examples should be given");
+            }
+        }
+
+        void AssertThatPlaceholdersCanBeResolvedWithThisTable(ScenarioOutline scenario, string fileName)
+        {
+            var placeholderMatcher = new Regex("<(.)*>");
+
+            var matches = scenario.Steps.SelectMany(s => placeholderMatcher.Matches(s.Text).Cast<Match>());
+
+            foreach(var match in matches.Select(m => m.Value.Substring(1, m.Value.Length - 2)))
+            {
+                var key = match;
+                
+                if (!scenario.Examples.Any(d => d.ContainsKey(key)))
+                {
+                    throw new GherkinParseException(fileName, "The placeholder '{0}' has no matching column in the table of examples", key);
+                }
+            }
         }
     }
 }

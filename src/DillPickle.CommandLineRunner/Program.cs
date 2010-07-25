@@ -15,11 +15,13 @@ namespace DillPickle.CommandLineRunner
             try
             {
                 Run(args);
+
                 return 0;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(e.Message);
+
                 return 1;
             }
         }
@@ -32,8 +34,8 @@ namespace DillPickle.CommandLineRunner
                     string.Format("Please specify a path to an assembly on the command line"));
             }
 
-            string assemblyPath = args[0];
-            string features = args[1];
+            var assemblyPath = args[0];
+            var features = args[1];
 
             if (!File.Exists(assemblyPath))
             {
@@ -50,16 +52,29 @@ namespace DillPickle.CommandLineRunner
 
             var runner = new Runner(featureRunner);
 
-            Assembly assembly = Assembly.LoadFile(GenerateAbsolutePath(assemblyPath));
+            var assembly = Assembly.LoadFile(GenerateAbsolutePath(assemblyPath));
 
-            runner.Run(Directory.GetFiles(Path.GetDirectoryName(features), Path.GetFileName(features))
-                           .SelectMany(
-                           fileName => new GherkinParser().Parse(fileName, File.ReadAllText(fileName)).Features)
-                           .ToArray(),
-                       assembly.GetTypes().Where(t => t.GetCustomAttributes(typeof (ActionStepsAttribute), false).Any())
-                           .ToArray());
+            var parser = new GherkinParser();
+            var featureFiles = Directory.GetFiles(Path.GetDirectoryName(features), Path.GetFileName(features));
+            var featuresToRun = featureFiles
+                .SelectMany(fileName => parser.Parse(fileName, File.ReadAllText(fileName)).Features)
+                .ToArray();
+
+            var actionStepsTypes = assembly.GetTypes()
+                .Where(HasActionStepsAttribute)
+                .ToArray();
+
+            Console.WriteLine("Found {0} features containing {1} executable scenarios", featuresToRun.Count(),
+                              featuresToRun.Sum(f => f.Scenarios.Count));
+
+            runner.Run(featuresToRun, actionStepsTypes);
 
             return;
+        }
+
+        static bool HasActionStepsAttribute(Type t)
+        {
+            return t.GetCustomAttributes(typeof (ActionStepsAttribute), false).Any();
         }
 
         static string GenerateAbsolutePath(string path)

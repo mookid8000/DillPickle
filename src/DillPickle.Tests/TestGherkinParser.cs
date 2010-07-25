@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using DillPickle.Framework.Exceptions;
 using NUnit.Framework;
 using DillPickle.Framework.Parser;
 
@@ -14,10 +15,41 @@ namespace DillPickle.Tests
             parser = new GherkinParser();
         }
 
-        void AssertStep(Step step, StepType expectedStepType, string expectedText)
+        [Test]
+        public void ThrowsOnVariousScenarioOutlineErrors()
         {
-            Assert.AreEqual(expectedStepType, step.StepType);
-            Assert.AreEqual(expectedText, step.Text);
+            ShouldThrow(@"
+Scenario outline:
+    Given I have <some> stuff
+        and I have <somethingElse> stuff
+
+    Examples:
+        | somethingElse |
+        | 234           |");
+
+            ShouldThrow(@"
+    Scenario outline:
+        Given I have 5 stuff
+");
+
+            ShouldThrow(@"
+    Scenario outline:
+        Given I have <howMany> stuff
+");
+            
+            ShouldThrow(@"Scenario: something
+
+    Given something
+
+    Examples:
+        | shouldOnlyPutExamplesInScenarioOutline |
+");
+        }
+
+        void ShouldThrow(string text)
+        {
+            Assert.Throws<GherkinParseException>(
+                () => parser.Parse(text));
         }
 
         [Test]
@@ -309,7 +341,7 @@ Scenario Outline: eating
     |  12   |  5  |  7   |
     |  20   |  5  |  15  |
 
-Scenario Outline: eating II
+scenario outline: eating II
   Given there are <start> cucumbers
     and the following users exist:
         | name  | age   |
@@ -351,6 +383,30 @@ Scenario Outline: eating II
             Assert.AreEqual("20", examples[1]["start"]);
             Assert.AreEqual("5", examples[1]["eat"]);
             Assert.AreEqual("15", examples[1]["left"]);
+
+            var scenarios = scenario.GetExecutableScenarios();
+            
+            Assert.AreEqual(2, scenarios.Count);
+            
+            var firstScenario = scenarios[0];
+            Assert.AreEqual(4, firstScenario.Steps.Count);
+            AssertStep(firstScenario.Steps[0], StepType.Given, "there are 12 cucumbers");
+            AssertStep(firstScenario.Steps[1], StepType.Given, "the following users exist:");
+            AssertStep(firstScenario.Steps[2], StepType.When, "I eat 5 cucumbers");
+            AssertStep(firstScenario.Steps[3], StepType.Then, "I should have 7 cucumbers");
+            
+            var secondScenario = scenarios[1];
+            Assert.AreEqual(4, secondScenario.Steps.Count);
+            AssertStep(secondScenario.Steps[0], StepType.Given, "there are 20 cucumbers");
+            AssertStep(secondScenario.Steps[1], StepType.Given, "the following users exist:");
+            AssertStep(secondScenario.Steps[2], StepType.When, "I eat 5 cucumbers");
+            AssertStep(secondScenario.Steps[3], StepType.Then, "I should have 15 cucumbers");
+        }
+
+        void AssertStep(Step step, StepType expectedStepType, string expectedText)
+        {
+            Assert.AreEqual(expectedStepType, step.StepType);
+            Assert.AreEqual(expectedText, step.Text);
         }
     }
 }
