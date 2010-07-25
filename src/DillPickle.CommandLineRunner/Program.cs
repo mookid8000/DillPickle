@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using DillPickle.Framework.Exceptions;
 using DillPickle.Framework.Executor.Attributes;
 using DillPickle.Framework.Parser;
 using DillPickle.Framework.Runner;
@@ -12,26 +13,66 @@ namespace DillPickle.CommandLineRunner
     {
         static int Main(string[] args)
         {
+            ShowBanner();
+
             try
             {
                 Run(args);
 
                 return 0;
             }
-            catch (Exception e)
+            catch (DillPickleException e)
             {
                 Console.WriteLine(e.Message);
 
-                return 1;
+                ShowHelpText();
+
+                return -1;
             }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+
+                return -1;
+            }
+        }
+
+        static void ShowBanner()
+        {
+            Console.WriteLine(@"
+Dill Pickle
+
+(c) 2010 Mogens Heller Grabe
+mookid8000@gmail.com
+http://mookid.dk/oncode
+
+Dill-flavored Gherkin-goodness for your BDD needs
+
+");
+        }
+
+        static void ShowHelpText()
+        {
+            Console.WriteLine(@"
+Usage:
+
+    dill.exe <assembly-path> <feature-pattern>
+
+where <assembly-path> is a relative or absolute path to an assembly containing
+classes with action steps, and <feature-pattern> is a relative or absolute path
+(possiblt containing wildcars) to the location of your feature files.
+
+E.g.:
+
+    dill ..\src\MyProj\bin\Debug\Asm.dll ..\src\MyProj\Features\03*.feature
+");
         }
 
         static void Run(string[] args)
         {
             if (args.Length != 2)
             {
-                throw new InvalidOperationException(
-                    string.Format("Please specify a path to an assembly on the command line"));
+                throw new CommandLineRunnerException("Please specify a path to an assembly on the command line");
             }
 
             var assemblyPath = args[0];
@@ -39,7 +80,7 @@ namespace DillPickle.CommandLineRunner
 
             if (!File.Exists(assemblyPath))
             {
-                throw new InvalidOperationException(string.Format("Could not find assembly: {0}", assemblyPath));
+                throw new CommandLineRunnerException("Could not find assembly: {0}", assemblyPath);
             }
 
             if (!Path.IsPathRooted(features))
