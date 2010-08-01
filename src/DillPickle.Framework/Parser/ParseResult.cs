@@ -1,15 +1,19 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace DillPickle.Framework.Parser
 {
     public class ParseResult
     {
+        readonly List<Feature> features = new List<Feature>();
+
         public ParseResult(IEnumerable<Feature> features)
         {
-            Features = features.ToList();
+            this.features.AddRange(features);
         }
 
-        public List<Feature> Features { get; set; }
+        public List<Feature> Features
+        {
+            get { return features; }
+        }
     }
 }

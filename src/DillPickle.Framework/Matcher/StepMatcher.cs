@@ -10,17 +10,19 @@ namespace DillPickle.Framework.Matcher
     {
         public StepMatch GetMatch(Step step, ActionStepMethod stepMethod)
         {
-            Token[] stepTokens = Tokenize(step.Text);
-            Token[] methodTokens = Tokenize(stepMethod.Text);
+            if (step.StepType != stepMethod.StepType) return StepMatch.NoMatch(step);
+
+            var stepTokens = Tokenize(step.Text);
+            var methodTokens = Tokenize(stepMethod.Text);
 
             if (stepTokens.Length != methodTokens.Length) return StepMatch.NoMatch(step);
 
             var tokens = new List<Token>();
 
-            for (int index = 0; index < stepTokens.Length; index++)
+            for (var index = 0; index < stepTokens.Length; index++)
             {
-                Token tok1 = stepTokens[index];
-                Token tok2 = methodTokens[index];
+                var tok1 = stepTokens[index];
+                var tok2 = methodTokens[index];
 
                 if (tok2 is VariableToken)
                 {
@@ -42,12 +44,12 @@ namespace DillPickle.Framework.Matcher
 
         Token[] Tokenize(string text)
         {
-            string[] sections = text.Split('"');
+            var sections = text.Split('"');
             var tokens = new List<Token>();
 
-            for (int index = 0; index < sections.Length; index++)
+            for (var index = 0; index < sections.Length; index++)
             {
-                string section = sections[index];
+                var section = sections[index];
 
                 if (index%2 == 0)
                 {

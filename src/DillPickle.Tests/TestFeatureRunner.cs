@@ -21,6 +21,75 @@ namespace DillPickle.Tests
         }
 
         [Test]
+        public void CanRunFeatureWithBackgroundSteps()
+        {
+            var feature = new Feature("feature", NoTags());
+            feature.BackgroundSteps.Add(Step.Given("something"));
+            feature.BackgroundSteps.Add(Step.Given("something else"));
+            feature.Scenarios.Add(new ExecutableScenario("scenario", NoTags())
+                                      {
+                                          Steps=
+                                              {
+                                                  Step.Given("the other stuff was called before"),
+                                                  Step.When("the other stuff was called before"),
+                                                  Step.Then("the other stuff was called before"),
+                                              }
+                                      });
+
+            runner.Run(feature, new[] {typeof (HasSomeSteps)});
+
+            Assert.IsTrue(HasSomeSteps.GivenCalled);
+            Assert.IsTrue(HasSomeSteps.WhenCalled);
+            Assert.IsTrue(HasSomeSteps.ThenCalled);
+        }
+
+        [ActionSteps]
+        class HasSomeSteps
+        {
+            public static bool SomethingCalled{ get; set;}
+            public static bool SomethingElseCalled { get; set; }
+            public static bool GivenCalled { get; set; }
+            public static bool WhenCalled { get; set; }
+            public static bool ThenCalled { get; set; }
+
+            [Given("something")]
+            public void GivenSomething()
+            {
+                SomethingCalled = true;
+            }
+
+            [Given("something else")]
+            public void GivenSomethingElse()
+            {
+                SomethingElseCalled = true;
+            }
+
+            [Given("the other stuff was called before")]
+            public void GivenTheOtherStuffWasCalledBefore()
+            {
+                GivenCalled = true;
+                Assert.IsTrue(SomethingCalled);
+                Assert.IsTrue(SomethingElseCalled);
+            }
+
+            [When("the other stuff was called before")]
+            public void WhenTheOtherStuffWasCalledBefore()
+            {
+                WhenCalled = true;
+                Assert.IsTrue(SomethingCalled);
+                Assert.IsTrue(SomethingElseCalled);
+            }
+
+            [Then("the other stuff was called before")]
+            public void ThenTheOtherStuffWasCalledBefore()
+            {
+                ThenCalled = true;
+                Assert.IsTrue(SomethingCalled);
+                Assert.IsTrue(SomethingElseCalled);
+            }
+        }
+
+        [Test]
         public void CanRunFeatureWithScenarioOutline()
         {
             var feature = new Feature("feature", NoTags());
