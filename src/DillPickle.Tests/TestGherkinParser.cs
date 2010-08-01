@@ -16,6 +16,47 @@ namespace DillPickle.Tests
         }
 
         [Test]
+        public void FeatureCanHaveBackgroundSteps()
+        {
+            var result = parser.Parse(
+                @"
+Feature: Some terse yet descriptive text of what is desired
+   In order to realize a named business value
+   As an explicit system actor
+   I want to gain some beneficial outcome which furthers the goal
+ 
+    Background:
+        Given something
+            and something else
+
+    Scenario: A different situation
+     Given some precondition
+      When some action by the actor
+      Then some testable outcome is achieved
+");
+
+            var backgroundSteps = result.Features[0].BackgroundSteps;
+
+            Assert.AreEqual(2, backgroundSteps.Count);
+            
+            Assert.AreEqual(StepType.Given, backgroundSteps[0].StepType);
+            Assert.AreEqual("something", backgroundSteps[0].Text);
+            
+            Assert.AreEqual(StepType.Given, backgroundSteps[1].StepType);
+            Assert.AreEqual("something else", backgroundSteps[1].Text);
+        }
+
+        [Test]
+        public void WhenOrThenStepsMayNotAppearInsideTheBackgroundSection()
+        {
+            ShouldThrow(@"
+    Background: 
+        Given something
+        When I do something
+    ");
+        }
+
+        [Test]
         public void ThrowsOnVariousScenarioOutlineErrors()
         {
             ShouldThrow(@"

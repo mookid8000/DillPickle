@@ -10,6 +10,7 @@ namespace DillPickle.Framework.Parser
         readonly List<Scenario> scenarios = new List<Scenario>();
         readonly StringBuilder storyText = new StringBuilder();
         readonly List<string> tags = new List<string>();
+        readonly List<Step> backgroundSteps = new List<Step>();
 
         public Feature(string headline, IEnumerable<string> accumulatedTags)
         {
@@ -35,6 +36,11 @@ namespace DillPickle.Framework.Parser
         public List<string> Tags
         {
             get { return tags; }
+        }
+
+        public List<Step> BackgroundSteps
+        {
+            get { return backgroundSteps; }
         }
 
         public static Feature NewAnonymousFeature(List<string> accumulatedTags)
