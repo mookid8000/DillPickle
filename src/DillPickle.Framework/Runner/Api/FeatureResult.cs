@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,6 +27,11 @@ namespace DillPickle.Framework.Runner.Api
 
                 return Result.Success;
             }
+        }
+
+        public void AddScenarioResult(ScenarioResult result)
+        {
+            ScenarioResults.Add(result);
         }
     }
 }
