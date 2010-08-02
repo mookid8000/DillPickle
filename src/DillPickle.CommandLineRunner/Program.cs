@@ -27,20 +27,32 @@ namespace DillPickle.CommandLineRunner
 
                 ShowHelpText();
 
-                return -1;
+                return 1;
             }
-            catch(Exception e)
+            catch (ReflectionTypeLoadException e)
+            {
+                var loaderExceptions = string.Join(Environment.NewLine, e.LoaderExceptions.Select(ex => ex.ToString()).ToArray());
+
+                Console.WriteLine(@"{0}
+
+Loader exceptions:
+
+{1}", e, loaderExceptions);
+
+                return 1;
+            }
+            catch (Exception e)
             {
                 Console.WriteLine(e);
 
-                return -1;
+                return 2;
             }
         }
 
         static void ShowBanner()
         {
             Console.WriteLine(@"
-Dill Pickle
+DillPickle
 
 (c) 2010 Mogens Heller Grabe
 mookid8000@gmail.com
@@ -93,7 +105,7 @@ E.g.:
 
             var runner = new Runner(featureRunner);
 
-            var assembly = Assembly.LoadFile(GenerateAbsolutePath(assemblyPath));
+            var assembly = Assembly.LoadFrom(GenerateAbsolutePath(assemblyPath));
 
             var parser = new GherkinParser();
             var featureFiles = Directory.GetFiles(Path.GetDirectoryName(features), Path.GetFileName(features));
