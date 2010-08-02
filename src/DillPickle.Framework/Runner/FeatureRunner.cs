@@ -14,6 +14,19 @@ namespace DillPickle.Framework.Runner
     {
         readonly List<IListener> listeners = new List<IListener>();
 
+        class FoundMatch
+        {
+            public Type RequiredType { get; set; }
+            public ActionStepMethod ActionStepMethod { get; set; }
+            public StepMatch StepMatch { get; set; }
+        }
+
+        class ActionStepsObjectHolder
+        {
+            public Type Type { get; set; }
+            public object Instance { get; set; }
+        }
+
         public FeatureResult Run(Feature feature, Type[] types)
         {
             listeners.ForEach(l => l.BeforeFeature(feature));
@@ -41,19 +54,19 @@ namespace DillPickle.Framework.Runner
                            let requiredType = actionStepClass.Type
                            from actionStepMethod in actionStepClass.ActionStepMethods
                            let match = matcher.GetMatch(step, actionStepMethod)
-                           select new
+                           where match.IsMatch
+                           select new FoundMatch
                                       {
-                                          Type = requiredType,
+                                          RequiredType = requiredType,
                                           ActionStepMethod = actionStepMethod,
-                                          Match = match,
+                                          StepMatch = match,
                                       })
                 .ToList();
 
             var executionObjects = matches
-                .Where(m => m.Match.IsMatch)
-                .Select(m => m.Type)
+                .Select(m => m.RequiredType)
                 .Distinct()
-                .Select(t => new
+                .Select(t => new ActionStepsObjectHolder
                                  {
                                      Type = t,
                                      Instance = Activator.CreateInstance(t)
@@ -79,8 +92,7 @@ namespace DillPickle.Framework.Runner
                         scenarioResult.StepResults.Add(stepResult);
 
                         var stepToMatch = step;
-                        var method = matches.FirstOrDefault(m => m.Match.Step == stepToMatch
-                                                                 && m.Match.IsMatch);
+                        var method = matches.FirstOrDefault(m => m.StepMatch.Step == stepToMatch);
 
                         if (method == null)
                         {
@@ -90,8 +102,8 @@ namespace DillPickle.Framework.Runner
                         {
                             try
                             {
-                                var targetObject = executionObjects[method.Type];
-                                var parameters = GenerateParameterList(method.ActionStepMethod, method.Match);
+                                var targetObject = executionObjects[method.RequiredType];
+                                var parameters = GenerateParameterList(method.ActionStepMethod, method.StepMatch);
                                 var methodInfo = method.ActionStepMethod.MethodInfo;
 
                                 methodInfo.Invoke(targetObject, parameters);
