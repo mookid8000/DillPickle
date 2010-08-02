@@ -13,51 +13,11 @@ namespace DillPickle.Framework.Runner
     public class FeatureRunner : IFeatureRunner
     {
         readonly List<IListener> listeners = new List<IListener>();
-
-        IObjectActivator objectActivator;
+        readonly IObjectActivator objectActivator;
 
         public FeatureRunner(IObjectActivator objectActivator)
         {
             this.objectActivator = objectActivator;
-        }
-
-        class FoundMatch
-        {
-            public Type RequiredType { get; set; }
-            public ActionStepMethod ActionStepMethod { get; set; }
-            public StepMatch StepMatch { get; set; }
-        }
-
-        class ActionStepsObjectHolder
-        {
-            readonly IObjectActivator objectActivator;
-
-            object instance;
-
-            public ActionStepsObjectHolder(IObjectActivator objectActivator)
-            {
-                this.objectActivator = objectActivator;
-            }
-
-            public Type Type { get; set; }
-            
-            public void CleanUp()
-            {
-                if (instance is IDisposable)
-                {
-                    ((IDisposable)instance).Dispose();
-                }
-            }
-
-            public object GetInstance()
-            {
-                return instance ?? (instance = CreateInstance());
-            }
-
-            object CreateInstance()
-            {
-                return objectActivator.GetInstance(Type);
-            }
         }
 
         public FeatureResult Run(Feature feature, Type[] types)
@@ -70,12 +30,7 @@ namespace DillPickle.Framework.Runner
 
         FeatureResult ExecuteFeature(Feature feature, Type[] types)
         {
-            var featureResult = new FeatureResult
-                                    {
-                                        Headline = feature.Headline,
-                                        Description = feature.Description
-                                    };
-
+            var featureResult = new FeatureResult(feature);
             var matcher = new StepMatcher();
             var finder = new ActionStepFinder();
 
@@ -331,6 +286,45 @@ namespace DillPickle.Framework.Runner
         void AfterStep(Scenario scenario, Feature feature, Step step, StepResult result)
         {
             listeners.ForEach(l => l.AfterStep(feature, scenario, step, result));
+        }
+
+        class FoundMatch
+        {
+            public Type RequiredType { get; set; }
+            public ActionStepMethod ActionStepMethod { get; set; }
+            public StepMatch StepMatch { get; set; }
+        }
+
+        class ActionStepsObjectHolder
+        {
+            readonly IObjectActivator objectActivator;
+
+            object instance;
+
+            public ActionStepsObjectHolder(IObjectActivator objectActivator)
+            {
+                this.objectActivator = objectActivator;
+            }
+
+            public Type Type { get; set; }
+
+            public void CleanUp()
+            {
+                if (instance is IDisposable)
+                {
+                    ((IDisposable)instance).Dispose();
+                }
+            }
+
+            public object GetInstance()
+            {
+                return instance ?? (instance = CreateInstance());
+            }
+
+            object CreateInstance()
+            {
+                return objectActivator.GetInstance(Type);
+            }
         }
     }
 }

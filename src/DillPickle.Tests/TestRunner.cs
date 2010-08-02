@@ -26,8 +26,8 @@ namespace DillPickle.Tests
             var feature1 = new Feature("ey!", new string[0]);
             var feature2 = new Feature("ey!", new string[0]);
             var availableTypes = new Type[0];
-            var result1 = new FeatureResult();
-            var result2 = new FeatureResult();
+            var result1 = new FeatureResult(feature1);
+            var result2 = new FeatureResult(feature2);
 
             featureRunner.Stub(r => r.Run(feature1, availableTypes)).Return(result1);
             featureRunner.Stub(r => r.Run(feature2, availableTypes)).Return(result2);

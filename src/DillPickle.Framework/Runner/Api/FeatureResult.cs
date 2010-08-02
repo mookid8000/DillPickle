@@ -1,13 +1,15 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using DillPickle.Framework.Parser;
 
 namespace DillPickle.Framework.Runner.Api
 {
     public class FeatureResult
     {
-        public FeatureResult()
+        public FeatureResult(Feature feature)
         {
+            Headline = feature.Headline;
+            Description = feature.Description;
             ScenarioResults = new List<ScenarioResult>();
         }
 
