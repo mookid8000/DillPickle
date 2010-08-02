@@ -88,7 +88,7 @@ E.g.:
                 features = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, features);
             }
 
-            var featureRunner = new FeatureRunner();
+            var featureRunner = new FeatureRunner(new TrivialObjectActivator());
             featureRunner.AddListener(new ConsoleWritingEventListener());
 
             var runner = new Runner(featureRunner);

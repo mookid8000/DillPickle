@@ -71,12 +71,14 @@
     <Compile Include="Parser\StepType.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Runner\Api\IListener.cs" />
+    <Compile Include="Runner\TrivialObjectActivator.cs" />
     <Compile Include="Runner\DefaultListener.cs" />
     <Compile Include="Exceptions\FeatureExecutionException.cs" />
     <Compile Include="Runner\Api\FeatureResult.cs" />
     <Compile Include="Runner\FeatureRunner.cs" />
     <Compile Include="Runner\Api\IFeatureRunner.cs" />
     <Compile Include="Runner\Api\Result.cs" />
+    <Compile Include="Runner\Api\IObjectActivator.cs" />
     <Compile Include="Runner\Runner.cs" />
     <Compile Include="Runner\Api\ScenarioResult.cs" />
     <Compile Include="Runner\Api\StepResult.cs" />

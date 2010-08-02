@@ -14,6 +14,13 @@ namespace DillPickle.Framework.Runner
     {
         readonly List<IListener> listeners = new List<IListener>();
 
+        IObjectActivator objectActivator;
+
+        public FeatureRunner(IObjectActivator objectActivator)
+        {
+            this.objectActivator = objectActivator;
+        }
+
         class FoundMatch
         {
             public Type RequiredType { get; set; }
@@ -23,20 +30,33 @@ namespace DillPickle.Framework.Runner
 
         class ActionStepsObjectHolder
         {
+            readonly IObjectActivator objectActivator;
+
+            object instance;
+
+            public ActionStepsObjectHolder(IObjectActivator objectActivator)
+            {
+                this.objectActivator = objectActivator;
+            }
+
             public Type Type { get; set; }
-            public object Instance { get; set; }
             
             public void CleanUp()
             {
-                if (Instance is IDisposable)
+                if (instance is IDisposable)
                 {
-                    ((IDisposable) Instance).Dispose();
+                    ((IDisposable)instance).Dispose();
                 }
             }
 
             public object GetInstance()
             {
-                return Instance;
+                return instance ?? (instance = CreateInstance());
+            }
+
+            object CreateInstance()
+            {
+                return objectActivator.GetInstance(Type);
             }
         }
 
@@ -93,10 +113,9 @@ namespace DillPickle.Framework.Runner
             return matches
                 .Select(m => m.RequiredType)
                 .Distinct()
-                .Select(t => new ActionStepsObjectHolder
+                .Select(t => new ActionStepsObjectHolder(objectActivator)
                                  {
                                      Type = t,
-                                     Instance = Activator.CreateInstance(t)
                                  })
                 .ToDictionary(t => t.Type);
         }

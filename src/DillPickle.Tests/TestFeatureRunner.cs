@@ -15,7 +15,7 @@ namespace DillPickle.Tests
 
         public override void DoSetUp()
         {
-            runner = new FeatureRunner();
+            runner = new FeatureRunner(new TrivialObjectActivator());
 
             ClassWithActionSteps.Reset();
         }
