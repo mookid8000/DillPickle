@@ -35,6 +35,7 @@ namespace DillPickle.Framework.Parser
                 StepType? mostRecentStepType = null;
                 var tableColumnNames = new List<string>();
                 var parsingExamples = false;
+                var parsingBackground = false;
 
                 var lineNumber = 0;
 
@@ -85,6 +86,12 @@ namespace DillPickle.Framework.Parser
                         features.Add(currentFeature);
                     }
 
+                    if (line.StartsWith("Background:", Comparison) )
+                    {
+                        parsingBackground = true;
+                        continue;
+                    }
+
                     if (line.StartsWith(ScenarioIntroduction, Comparison))
                     {
                         var scenarioText = line.Substring(line.IndexOf(":") + 1).Trim();
@@ -93,7 +100,7 @@ namespace DillPickle.Framework.Parser
                         tableColumnNames.Clear();
                         currentFeature.Scenarios.Add(currentScenario);
                         mostRecentStepType = null;
-                        parsingExamples = false;
+                        parsingExamples = parsingBackground = false;
                         continue;
                     }
 
@@ -105,7 +112,7 @@ namespace DillPickle.Framework.Parser
                         tableColumnNames.Clear();
                         currentFeature.Scenarios.Add(currentScenario);
                         mostRecentStepType = null;
-                        parsingExamples = false;
+                        parsingExamples = parsingBackground = false;
                         continue;
                     }
 
@@ -121,7 +128,7 @@ namespace DillPickle.Framework.Parser
                         continue;
                     }
 
-                    if (currentScenario != null)
+                    if (parsingBackground)
                     {
                         if (string.IsNullOrEmpty(line))
                         {
@@ -134,6 +141,62 @@ namespace DillPickle.Framework.Parser
                             {
                                 throw new GherkinParseException(fileName, lineNumber, line,
                                                                 @"Lines can only be introduced with ""and"" when it's preceded by either ""given"", ""when"", or ""then"".");
+                            }
+
+                            currentFeature.BackgroundSteps.Add(Step.And(line.Substring("and".Length).Trim(),
+                                                               mostRecentStepType.Value));
+                        }
+                        else if (line.StartsWith("given", Comparison))
+                        {
+                            currentFeature.BackgroundSteps.Add(Step.Given(line.Substring("given".Length).Trim()));
+                            mostRecentStepType = StepType.Given;
+                            tableColumnNames.Clear();
+                        }
+                        else if (line.StartsWith("|"))
+                        {
+                            var tokens = line.Split('|').Select(s => s.Trim()).ToArray();
+
+                            if (!tableColumnNames.Any())
+                            {
+                                tableColumnNames.AddRange(tokens);
+                            }
+                            else
+                            {
+                                var dict = new Dictionary<string, string>();
+
+                                for (var index = 0; index < tokens.Length; index++)
+                                {
+                                    var key = tableColumnNames[index];
+                                    if (string.IsNullOrEmpty(key)) continue;
+
+                                    dict[key] = tokens[index];
+                                }
+
+                                currentFeature.BackgroundSteps.Last().Parameters.Add(dict);
+                            }
+                        }
+                        else
+                        {
+                            throw new GherkinParseException(fileName, lineNumber, line,
+                                                            @"Expected line to start with either ""given"", or ""|"". Please note that ""when"" or ""then"" steps may not appear inside the background element.");
+                        }
+
+                        continue;
+                    }
+
+                    if (currentScenario != null)
+                    {
+                        if (string.IsNullOrEmpty(line))
+                        {
+                            continue;
+                        }
+
+                        if (line.StartsWith("and", Comparison))
+                        {
+                            if (mostRecentStepType == null)
+                            {
+                                throw new GherkinParseException(fileName, lineNumber, line,
+                                                                @"Lines can only be introduced with ""and"" when it's preceded by either ""given"", ""when"", ""then"", or ""|"".");
                             }
 
                             currentScenario.Steps.Add(Step.And(line.Substring("and".Length).Trim(),

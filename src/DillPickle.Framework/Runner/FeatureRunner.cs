@@ -27,10 +27,17 @@ namespace DillPickle.Framework.Runner
             var matcher = new StepMatcher();
             var finder = new ActionStepFinder();
 
-            var matches = (from scenarioBase in feature.Scenarios
-                           from scenario in scenarioBase.GetExecutableScenarios()
-                           from step in scenario.Steps
-                           from actionStepClass in finder.Find(types)
+            var steps = (from scenarioBase in feature.Scenarios
+                         from scenario in scenarioBase.GetExecutableScenarios()
+                         from step in scenario.Steps
+                         select step)
+                .Concat(feature.BackgroundSteps)
+                .Distinct();
+
+            var actionStepsClasses = finder.Find(types);
+
+            var matches = (from step in steps
+                           from actionStepClass in actionStepsClasses
                            let requiredType = actionStepClass.Type
                            from actionStepMethod in actionStepClass.ActionStepMethods
                            let match = matcher.GetMatch(step, actionStepMethod)
@@ -63,7 +70,7 @@ namespace DillPickle.Framework.Runner
                     var scenarioResult = new ScenarioResult(scenario.Headline);
                     featureResult.ScenarioResults.Add(scenarioResult);
 
-                    foreach (var step in scenario.Steps)
+                    foreach (var step in feature.BackgroundSteps.Concat(scenario.Steps))
                     {
                         var currentStep = step;
                         listeners.ForEach(l => l.BeforeStep(feature, currentScenario, currentStep));

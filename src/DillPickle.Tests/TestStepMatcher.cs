@@ -71,6 +71,15 @@ namespace DillPickle.Tests
         }
 
         [Test]
+        public void DoesNotMatchStepsOfDifferentTypes()
+        {
+            var step = Step.Given("i am logged in as an administrator");
+            var method = new ActionStepMethod(null, new ThenAttribute("i am logged in as an administrator"));
+
+            Assert.IsFalse(matcher.GetMatch(step, method).IsMatch);
+        }
+
+        [Test]
         public void WorksWithMultipleQuotedAndNonQuotedStringIsAnExtremelyComplexSetUpThatReallyShouldNeverHappen()
         {
             var step = Step.Given(@"i am punching ""hello there, my name is Joe!"""
