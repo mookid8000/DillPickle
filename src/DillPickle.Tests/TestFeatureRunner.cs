@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DillPickle.Framework.Runner.Api;
 using NUnit.Framework;
 using DillPickle.Framework.Executor.Attributes;
@@ -18,6 +19,195 @@ namespace DillPickle.Tests
             runner = new FeatureRunner(new TrivialObjectActivator());
 
             ClassWithActionSteps.Reset();
+        }
+
+        [Test]
+        public void HooksAreCalledAsExpected()
+        {
+            var feature = new Feature("feature", NoTags())
+                              {
+                                  BackgroundSteps =
+                                      {
+                                          Step.Given("some background"),
+                                      },
+                                  Scenarios =
+                                      {
+                                          new ExecutableScenario("scenario", NoTags())
+                                              {
+                                                  Steps =
+                                                      {
+                                                          Step.Given("something"),
+                                                          Step.When("something"),
+                                                          Step.Then("something"),
+                                                      }
+                                              },
+                                          new ExecutableScenario("scenario", NoTags())
+                                              {
+                                                  Steps =
+                                                      {
+                                                          Step.Given("something"),
+                                                          Step.Given("something"),
+                                                          Step.When("something"),
+                                                          Step.When("something"),
+                                                          Step.Then("something"),
+                                                          Step.Then("something"),
+                                                      }
+                                              }
+                                      }
+                              };
+
+            runner.Run(feature, new[] {typeof (RecordsTheOrderOfThings)});
+
+            var expectedCalls = new[]
+                                    {
+                                        What.Ctor,
+                                        What.BeforeFeature,
+
+                                        What.BeforeScenario,
+
+                                        What.BeforeStep,
+                                        What.GivenSomeBackground,
+                                        What.AfterStep,
+                                        
+                                        What.BeforeStep,
+                                        What.GivenSomething,
+                                        What.AfterStep,
+                                        What.BeforeStep,
+                                        What.WhenSomething,
+                                        What.AfterStep,
+                                        What.BeforeStep,
+                                        What.ThenSomething,
+                                        What.AfterStep,
+                                        
+                                        What.AfterScenario,
+
+
+
+                                        What.BeforeScenario,
+                                        
+                                        What.BeforeStep,
+                                        What.GivenSomeBackground,
+                                        What.AfterStep,
+
+                                        What.BeforeStep,
+                                        What.GivenSomething,
+                                        What.AfterStep,
+                                        What.BeforeStep,
+                                        What.GivenSomething,
+                                        What.AfterStep,
+                                        What.BeforeStep,
+                                        What.WhenSomething,
+                                        What.AfterStep,
+                                        What.BeforeStep,
+                                        What.WhenSomething,
+                                        What.AfterStep,
+                                        What.BeforeStep,
+                                        What.ThenSomething,
+                                        What.AfterStep,
+                                        What.BeforeStep,
+                                        What.ThenSomething,
+                                        What.AfterStep,
+                                        
+                                        What.AfterScenario,
+
+                                        What.AfterFeature,
+                                        What.Disposed,
+                                    };
+
+            Assert.IsTrue(RecordsTheOrderOfThings.WhatHappened.SequenceEqual(expectedCalls),
+                          @"
+expected:
+    {0}
+but was:
+    {1}
+", expectedCalls.JoinToString(", "),
+ RecordsTheOrderOfThings.WhatHappened.JoinToString(", "));
+        }
+
+        public enum What
+        {
+            Ctor, Disposed,
+            GivenSomething, WhenSomething, ThenSomething,
+            GivenSomeBackground,
+            BeforeFeature, AfterFeature,
+            BeforeScenario, AfterScenario,
+            BeforeStep, AfterStep
+        }
+
+        [ActionSteps]
+        class RecordsTheOrderOfThings : IDisposable
+        {
+            public RecordsTheOrderOfThings()
+            {
+                WhatHappened = new List<What> {What.Ctor};
+            }
+
+            public static  List<What> WhatHappened { get; set; }
+            
+            [BeforeFeature]
+            public void BeforeFeature()
+            {
+                WhatHappened.Add(What.BeforeFeature);
+            }
+
+            [AfterFeature]
+            public void AfterFeature()
+            {
+                WhatHappened.Add(What.AfterFeature);
+            }
+
+            [BeforeScenario]
+            public void BeforeScenario()
+            {
+                WhatHappened.Add(What.BeforeScenario);
+            }
+
+            [AfterScenario]
+            public void AfterScenario()
+            {
+                WhatHappened.Add(What.AfterScenario);
+            }
+
+            [BeforeStep]
+            public void BeforeStep()
+            {
+                WhatHappened.Add(What.BeforeStep);
+            }
+
+            [AfterStep]
+            public void AfterStep()
+            {
+                WhatHappened.Add(What.AfterStep);
+            }
+
+            [Given("something")]
+            public void Given()
+            {
+                WhatHappened.Add(What.GivenSomething);
+            }
+
+            [When("something")]
+            public void When()
+            {
+                WhatHappened.Add(What.WhenSomething);
+            }
+
+            [Then("something")]
+            public void Then()
+            {
+                WhatHappened.Add(What.ThenSomething);
+            }
+
+            [Given("some background")]
+            public void GivenBackground()
+            {
+                WhatHappened.Add(What.GivenSomeBackground);
+            }
+
+            public void Dispose()
+            {
+                WhatHappened.Add(What.Disposed);
+            }
         }
 
         [Test]

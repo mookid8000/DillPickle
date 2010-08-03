@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using DillPickle.Framework.Exceptions;
 using DillPickle.Framework.Executor;
+using DillPickle.Framework.Executor.Attributes;
+using DillPickle.Framework.Executor.Attributes.Base;
 using DillPickle.Framework.Matcher;
 using DillPickle.Framework.Parser;
 using DillPickle.Framework.Runner.Api;
@@ -22,10 +24,7 @@ namespace DillPickle.Framework.Runner
 
         public FeatureResult Run(Feature feature, Type[] types)
         {
-            BeforeFeature(feature);
-            var result = ExecuteFeature(feature, types);
-            AfterFeature(feature, result);
-            return result;
+            return ExecuteFeature(feature, types);
         }
 
         FeatureResult ExecuteFeature(Feature feature, Type[] types)
@@ -41,13 +40,17 @@ namespace DillPickle.Framework.Runner
 
             try
             {
+                BeforeFeature(feature, executionObjects);
+
                 foreach (var scenario in feature.Scenarios.SelectMany(s => s.GetExecutableScenarios()))
                 {
-                    BeforeScenario(feature, scenario);
+                    BeforeScenario(feature, scenario, executionObjects);
                     var result = ExecuteScenario(scenario, feature, matches, executionObjects);
                     featureResult.AddScenarioResult(result);
-                    AfterScenario(feature, scenario, result);
+                    AfterScenario(feature, scenario, result, executionObjects);
                 }
+
+                AfterFeature(feature, featureResult, executionObjects);
             }
             finally
             {
@@ -108,10 +111,10 @@ namespace DillPickle.Framework.Runner
 
             foreach (var step in feature.BackgroundSteps.Concat(scenario.Steps))
             {
-                BeforeStep(scenario, feature, step);
+                BeforeStep(scenario, feature, step, executionObjects);
                 var result = ExecuteStep(step, matches, executionObjects);
                 scenarioResult.AddStepResult(result);
-                AfterStep(scenario, feature, step, result);
+                AfterStep(scenario, feature, step, result, executionObjects);
             }
 
             return scenarioResult;
@@ -258,34 +261,56 @@ namespace DillPickle.Framework.Runner
             listeners.Add(listener);
         }
 
-        void BeforeFeature(Feature feature)
+        void ExecuteMethodsDecoratedWith<T>(IEnumerable<ActionStepsObjectHolder> collection) where T : HookAttribute
+        {
+            foreach (var item in collection)
+            {
+                var instance = item.GetInstance();
+
+                var methods = instance.GetType()
+                    .GetMethods()
+                    .Where(m => m.GetCustomAttributes(typeof (T), false).Any())
+                    .Where(m => !m.GetParameters().Any())
+                    .ToList();
+
+                methods.ForEach(m => m.Invoke(instance, new object[0]));
+            }
+        }
+
+        void BeforeFeature(Feature feature, Dictionary<Type, ActionStepsObjectHolder> dictionary)
         {
             listeners.ForEach(l => l.BeforeFeature(feature));
+            ExecuteMethodsDecoratedWith<BeforeFeatureAttribute>(dictionary.Values);
         }
 
-        void AfterFeature(Feature feature, FeatureResult featureResult)
+        void AfterFeature(Feature feature, FeatureResult featureResult, Dictionary<Type, ActionStepsObjectHolder> dictionary)
         {
             listeners.ForEach(l => l.AfterFeature(feature, featureResult));
+            ExecuteMethodsDecoratedWith<AfterFeatureAttribute>(dictionary.Values);
         }
 
-        void AfterScenario(Feature feature, Scenario scenario, ScenarioResult result)
+        void AfterScenario(Feature feature, Scenario scenario, ScenarioResult result, Dictionary<Type, ActionStepsObjectHolder> dictionary)
         {
             listeners.ForEach(l => l.AfterScenario(feature, scenario, result));
+            ExecuteMethodsDecoratedWith<AfterScenarioAttribute>(dictionary.Values);
         }
 
-        void BeforeScenario(Feature feature, Scenario scenario)
+        void BeforeScenario(Feature feature, Scenario scenario, Dictionary<Type, ActionStepsObjectHolder> dictionary)
         {
             listeners.ForEach(l => l.BeforeScenario(feature, scenario));
+            ExecuteMethodsDecoratedWith<BeforeScenarioAttribute>(dictionary.Values);
         }
 
-        void BeforeStep(Scenario scenario, Feature feature, Step step)
+        void BeforeStep(Scenario scenario, Feature feature, Step step, Dictionary<Type, ActionStepsObjectHolder> dictionary)
         {
             listeners.ForEach(l => l.BeforeStep(feature, scenario, step));
+            ExecuteMethodsDecoratedWith<BeforeStepAttribute>(dictionary.Values);
         }
 
-        void AfterStep(Scenario scenario, Feature feature, Step step, StepResult result)
+        void AfterStep(Scenario scenario, Feature feature, Step step, StepResult result, Dictionary<Type, ActionStepsObjectHolder> dictionary)
         {
             listeners.ForEach(l => l.AfterStep(feature, scenario, step, result));
+            ExecuteMethodsDecoratedWith<AfterStepAttribute>(dictionary.Values);
         }
 
         class FoundMatch

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DillPickle.Framework.Executor.Attributes;
+using DillPickle.Framework.Executor.Attributes.Base;
 
 namespace DillPickle.Framework.Executor
 {

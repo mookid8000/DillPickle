@@ -50,8 +50,15 @@
     <Compile Include="Executor\ActionStepMethod.cs" />
     <Compile Include="Executor\ActionStepsClass.cs" />
     <Compile Include="Executor\Attributes\ActionStepsAttribute.cs" />
+    <Compile Include="Executor\Attributes\AfterFeatureAttribute.cs" />
+    <Compile Include="Executor\Attributes\AfterScenarioAttribute.cs" />
+    <Compile Include="Executor\Attributes\AfterStepAttribute.cs" />
+    <Compile Include="Executor\Attributes\BeforeFeatureAttribute.cs" />
+    <Compile Include="Executor\Attributes\BeforeScenarioAttribute.cs" />
+    <Compile Include="Executor\Attributes\BeforeStepAttribute.cs" />
     <Compile Include="Executor\Attributes\GivenAttribute.cs" />
-    <Compile Include="Executor\Attributes\StepAttribute.cs" />
+    <Compile Include="Executor\Attributes\Base\HookAttribute.cs" />
+    <Compile Include="Executor\Attributes\Base\StepAttribute.cs" />
     <Compile Include="Executor\Attributes\ThenAttribute.cs" />
     <Compile Include="Executor\Attributes\WhenAttribute.cs" />
     <Compile Include="Matcher\StepMatch.cs" />
