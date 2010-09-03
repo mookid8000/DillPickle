@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using DillPickle.Framework.Parser;
 using DillPickle.Framework.Runner;
 using DillPickle.Framework.Runner.Api;
@@ -41,10 +42,33 @@ Scenario: {0}", scenario.Headline);
                           ? string.Format(" - {0}", result.Result)
                           : "");
 
+            if (step.Parameters.Any())
+            {
+                WriteParameters(result.Result, step.Parameters);
+            }
+
             if (result.Result == Result.Failed)
             {
                 errorMessages.Add(result.ErrorMessage);
             }
+        }
+
+        void WriteParameters(Result result, IEnumerable<Dictionary<string, string>> parameters)
+        {
+            var keys = parameters.First().Keys;
+            var color = Color(result);
+            var tabs = 3;
+
+            WriteLine(color, tabs, "| " + string.Join(" | ", keys.Select(k => k.PadRight(MaxWidth(parameters, k))).ToArray()) + " |");
+            foreach(var row in parameters)
+            {
+                WriteLine(color, tabs, "| " + string.Join(" | ", keys.Select(key => row[key].PadRight(MaxWidth(parameters, key))).ToArray()) + " |");
+            }
+        }
+
+        int MaxWidth(IEnumerable<Dictionary<string, string>> parameters, string key)
+        {
+            return Math.Max(parameters.Max(p => p[key].Length), key.Length);
         }
 
         public override void AfterFeature(Feature feature, FeatureResult result)
