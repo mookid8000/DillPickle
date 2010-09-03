@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="FixtureBase.cs" />
     <Compile Include="TestFeatureRunner.cs" />
+    <Compile Include="TestIntelligentPropertySetter.cs" />
     <Compile Include="TestRunner.cs" />
     <Compile Include="TestActionStepFinder.cs" />
     <Compile Include="TestGherkinParser.cs" />

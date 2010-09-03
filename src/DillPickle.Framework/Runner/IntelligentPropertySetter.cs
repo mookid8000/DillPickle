@@ -30,26 +30,18 @@ namespace DillPickle.Framework.Runner
                                          .Cast<TypeConverterAttribute>()
                                          .SingleOrDefault()
                                  })
-                .Where(t => t.Attribute != null && t.Attribute.TargetType == targetType)
+                .Where(t => t.Attribute != null && IsTheRightConverter(t.Type, targetType))
                 .FirstOrDefault();
 
             if (thing != null)
             {
                 var typeConverterType = thing.Type;
-
-                if (!typeof(ITypeConverter).IsAssignableFrom(typeConverterType))
-                {
-                    throw new FeatureExecutionException(
-                        "{0} must implement ITypeConverter if you want it to convert to {1}",
-                        typeConverterType.FullName,
-                        targetType.Name);
-                }
-
-                var typeConverter = (ITypeConverter) objectActivator.GetInstance(typeConverterType);
+                var typeConverter = objectActivator.GetInstance(typeConverterType);
+                
                 try
                 {
-                    var convert = typeConverter.Convert(value);
-                    property.SetValue(instance, convert, null);
+                    property.SetValue(instance, typeConverterType.GetMethod("Convert")
+                                                    .Invoke(typeConverter, new object[] {value}), null);
                 }
                 catch(Exception e)
                 {
@@ -65,26 +57,23 @@ namespace DillPickle.Framework.Runner
                 fallbackPropertySetter.SetValue(instance, property, value);
             }
         }
+
+        bool IsTheRightConverter(Type type, Type targetType)
+        {
+            return typeof (ITypeConverter<>).MakeGenericType(targetType).IsAssignableFrom(type);
+            return type.GetInterfaces().Any(i => i.IsGenericType
+                                                 && i.GetGenericTypeDefinition() == typeof (ITypeConverter<>)
+                                                 && i.GetGenericArguments()[0] == targetType);
+        }
     }
 
-    public interface ITypeConverter
+    public interface ITypeConverter<TTargetType>
     {
-        object Convert(string value);
+        TTargetType Convert(string value);
     }
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class TypeConverterAttribute : Attribute
     {
-        readonly Type targetType;
-
-        public TypeConverterAttribute(Type targetType)
-        {
-            this.targetType = targetType;
-        }
-
-        public Type TargetType
-        {
-            get { return targetType; }
-        }
     }
 }
