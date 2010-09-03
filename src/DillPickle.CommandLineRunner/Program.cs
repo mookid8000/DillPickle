@@ -102,6 +102,12 @@ E.g.:
 
             var assembly = Assembly.LoadFrom(GenerateAbsolutePath(assemblyPath));
 
+            var configPath = GenerateAbsolutePath(assemblyPath) + ".config";
+            if (File.Exists(configPath))
+            {
+                AppDomain.CurrentDomain.SetData("APP_CONFIG_FILE", configPath);
+            }
+
             var objectActivator = new TrivialObjectActivator();
             var featureRunner = new FeatureRunner(objectActivator, new IntelligentPropertySetter(new TrivialPropertySetter(), assembly, objectActivator));
             featureRunner.AddListener(new ConsoleWritingEventListener());
