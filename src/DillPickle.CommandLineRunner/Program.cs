@@ -100,12 +100,13 @@ E.g.:
                 features = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, features);
             }
 
-            var featureRunner = new FeatureRunner(new TrivialObjectActivator());
+            var assembly = Assembly.LoadFrom(GenerateAbsolutePath(assemblyPath));
+
+            var objectActivator = new TrivialObjectActivator();
+            var featureRunner = new FeatureRunner(objectActivator, new IntelligentPropertySetter(new TrivialPropertySetter(), assembly, objectActivator));
             featureRunner.AddListener(new ConsoleWritingEventListener());
 
             var runner = new Runner(featureRunner);
-
-            var assembly = Assembly.LoadFrom(GenerateAbsolutePath(assemblyPath));
 
             var parser = new GherkinParser();
             var featureFiles = Directory.GetFiles(Path.GetDirectoryName(features), Path.GetFileName(features));

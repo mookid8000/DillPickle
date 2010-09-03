@@ -8,5 +8,10 @@ namespace DillPickle.Framework.Exceptions
             : base(string.Format(message, objs))
         {
         }
+
+        protected DillPickleException(Exception innerException, string message, params object[] objs)
+            : base(string.Format(message, objs), innerException)
+        {
+        }
     }
 }
