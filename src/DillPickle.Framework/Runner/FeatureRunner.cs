@@ -16,10 +16,12 @@ namespace DillPickle.Framework.Runner
     {
         readonly List<IListener> listeners = new List<IListener>();
         readonly IObjectActivator objectActivator;
+        readonly IPropertySetter propertySetter;
 
-        public FeatureRunner(IObjectActivator objectActivator)
+        public FeatureRunner(IObjectActivator objectActivator, IPropertySetter propertySetter)
         {
             this.objectActivator = objectActivator;
+            this.propertySetter = propertySetter;
         }
 
         public FeatureResult Run(Feature feature, Type[] types)
@@ -239,7 +241,7 @@ namespace DillPickle.Framework.Runner
 
                 try
                 {
-                    property.SetValue(instance, Convert.ChangeType(value, property.PropertyType), null);
+                    propertySetter.SetValue(instance, property, value);
                 }
                 catch (Exception e)
                 {

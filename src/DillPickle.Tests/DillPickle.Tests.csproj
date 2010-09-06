@@ -58,6 +58,8 @@
     <Compile Include="Runner\TestDefaultRunner.cs" />
     <Compile Include="Executor\TestActionStepFinder.cs" />
     <Compile Include="Parser\TestGherkinParser.cs" />
+    <Compile Include="TestFeatureRunner.cs" />
+    <Compile Include="TestIntelligentPropertySetter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Matcher\TestStepMatcher.cs" />
   </ItemGroup>
