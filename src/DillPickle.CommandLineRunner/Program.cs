@@ -6,20 +6,34 @@ using DillPickle.Framework.Exceptions;
 using DillPickle.Framework.Executor.Attributes;
 using DillPickle.Framework.Parser;
 using DillPickle.Framework.Runner;
+using GoCommando;
 
 namespace DillPickle.CommandLineRunner
 {
-    internal class Program
+    [Banner(@"DillPickle
+
+(c) 2010 Mogens Heller Grabe
+mookid8000@gmail.com
+http://mookid.dk/oncode
+
+Dill-flavored Gherkin-goodness for your BDD needs
+")]
+    public class Program : IGoCommando
     {
+        [PositionalArgument(0)]
+        public string AssemblyPath { get; set; }
+
+        [PositionalArgument(1)]
+        public string FeaturePattern { get; set; }
+
+        [NamedArgument("dryrun", "d")]
+        public bool DryRun { get; set; }
+
         static int Main(string[] args)
         {
-            ShowBanner();
-
             try
             {
-                Run(args);
-
-                return 0;
+                return Go.Run<Program>(args);
             }
             catch (DillPickleException e)
             {
@@ -49,20 +63,6 @@ Loader exceptions:
             }
         }
 
-        static void ShowBanner()
-        {
-            Console.WriteLine(@"
-DillPickle
-
-(c) 2010 Mogens Heller Grabe
-mookid8000@gmail.com
-http://mookid.dk/oncode
-
-Dill-flavored Gherkin-goodness for your BDD needs
-
-");
-        }
-
         static void ShowHelpText()
         {
             Console.WriteLine(@"
@@ -80,35 +80,27 @@ E.g.:
 ");
         }
 
-        static void Run(string[] args)
+        public void Run()
         {
-            if (args.Length != 2)
+            if (!File.Exists(AssemblyPath))
             {
-                throw new CommandLineRunnerException("Please specify a path to an assembly on the command line");
+                throw new CommandLineRunnerException("Could not find assembly: {0}", AssemblyPath);
             }
 
-            var assemblyPath = args[0];
-            var features = args[1];
-
-            if (!File.Exists(assemblyPath))
+            if (!Path.IsPathRooted(FeaturePattern))
             {
-                throw new CommandLineRunnerException("Could not find assembly: {0}", assemblyPath);
-            }
-
-            if (!Path.IsPathRooted(features))
-            {
-                features = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, features);
+                FeaturePattern = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FeaturePattern);
             }
 
             var featureRunner = new FeatureRunner(new TrivialObjectActivator());
             featureRunner.AddListener(new ConsoleWritingEventListener());
 
-            var runner = new Runner(featureRunner);
+            var runner = new DefaultRunner(featureRunner);
 
-            var assembly = Assembly.LoadFrom(GenerateAbsolutePath(assemblyPath));
+            var assembly = Assembly.LoadFrom(GenerateAbsolutePath(AssemblyPath));
 
             var parser = new GherkinParser();
-            var featureFiles = Directory.GetFiles(Path.GetDirectoryName(features), Path.GetFileName(features));
+            var featureFiles = Directory.GetFiles(Path.GetDirectoryName(FeaturePattern), Path.GetFileName(FeaturePattern));
             var featuresToRun = featureFiles
                 .SelectMany(fileName => parser.Parse(fileName, File.ReadAllText(fileName)).Features)
                 .ToArray();

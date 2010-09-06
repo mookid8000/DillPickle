@@ -86,7 +86,7 @@
     <Compile Include="Runner\Api\IFeatureRunner.cs" />
     <Compile Include="Runner\Api\Result.cs" />
     <Compile Include="Runner\Api\IObjectActivator.cs" />
-    <Compile Include="Runner\Runner.cs" />
+    <Compile Include="Runner\DefaultRunner.cs" />
     <Compile Include="Runner\Api\ScenarioResult.cs" />
     <Compile Include="Runner\Api\StepResult.cs" />
   </ItemGroup>
