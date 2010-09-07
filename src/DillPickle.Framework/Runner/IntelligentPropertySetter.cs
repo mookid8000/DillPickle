@@ -61,9 +61,6 @@ namespace DillPickle.Framework.Runner
         bool IsTheRightConverter(Type type, Type targetType)
         {
             return typeof (ITypeConverter<>).MakeGenericType(targetType).IsAssignableFrom(type);
-            return type.GetInterfaces().Any(i => i.IsGenericType
-                                                 && i.GetGenericTypeDefinition() == typeof (ITypeConverter<>)
-                                                 && i.GetGenericArguments()[0] == targetType);
         }
     }
 

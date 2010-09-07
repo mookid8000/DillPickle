@@ -23,9 +23,13 @@ Dill-flavored Gherkin-goodness for your BDD needs
     public class Program : ICommando
     {
         [PositionalArgument]
+        [Description("Path to the assembly containing classes with [ActionSteps] and [TypeConverter]s")]
+        [Example(@"..\src\SomeProject.Specs\bin\Debug\SomeProject.Specs.dll")]
         public string AssemblyPath { get; set; }
 
         [PositionalArgument]
+        [Description("File pattern of feature files to load")]
+        [Example(@"..\src\SomeProject.Specs\Features\*.feature")]
         public string FeaturePattern { get; set; }
 
         [NamedArgument("dryrun", "d")]
