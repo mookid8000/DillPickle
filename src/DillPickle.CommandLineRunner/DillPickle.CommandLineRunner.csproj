@@ -57,7 +57,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DillPickle.Framework\DillPickle.Framework.csproj">
       <Project>{99222B69-4839-4C83-AFAA-7BF52B16133B}</Project>
-      <Name>Pickles.Framework</Name>
+      <Name>DillPickle.Framework</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

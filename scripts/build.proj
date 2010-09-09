@@ -1,0 +1,42 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Framework Include="..\src\DillPickle.Framework\DillPickle.Framework.csproj" />
+    <Runner Include="..\src\DillPickle.CommandLineRunner\DillPickle.CommandLineRunner.csproj" />
+    <GoCommando Include="..\lib\GoCommando\GoCommando.dll" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <BuildDestination>..\deploy</BuildDestination>
+    <ToolsFolder>..\tools</ToolsFolder>
+    <ScriptsFolder>..\scripts</ScriptsFolder>
+    <IlMerge>$(ToolsFolder)\ilmerge\Ilmerge.exe</IlMerge>
+  </PropertyGroup>
+
+  <Target Name="build" DependsOnTargets="cleanBinaries;deleteBuildDestination;buildProjects;mergeBinaries" />
+
+  <Target Name="buildProjects">
+    <Message Text="Building projects in Release configuration"/>
+    <MSBuild Projects="@(Framework)" Targets="build" StopOnFirstFailure="true" Properties="Configuration=Release">
+      <Output TaskParameter="TargetOutputs" ItemName="FrameworkOutput" />
+    </MSBuild>
+    <MSBuild Projects="@(Runner)" Targets="build" StopOnFirstFailure="true" Properties="Configuration=Release">
+      <Output TaskParameter="TargetOutputs" ItemName="RunnerOutput" />
+    </MSBuild>
+  </Target>
+
+  <Target Name="cleanBinaries">
+    <Message Text="Cleaning binaries from previous build"/>
+    <MSBuild Projects="@(ProjectReferences)" Targets="clean" StopOnFirstFailure="true" Properties="Configuration=Release" />
+  </Target>
+
+  <Target Name="deleteBuildDestination">
+    <Message Text="Removing build destination"/>
+    <RemoveDir Directories="$(BuildDestination)" />
+  </Target>
+  
+  <Target Name="mergeBinaries">
+    <Message Text="Merging binaries"/>
+    <MakeDir Directories="$(BuildDestination)"/>
+    <Exec Command="$(IlMerge) /out:$(BuildDestination)\dill.exe @(RunnerOutput) @(FrameworkOutput) @(GoCommando) /internalize:$(ScriptsFolder)\excluded_from_internalization.txt" />
+  </Target>
+</Project>

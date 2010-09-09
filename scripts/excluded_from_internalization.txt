@@ -1,0 +1,5 @@
+# Makes sure all types in namespaces
+# below DillPickle will be excluded
+# from internalization in the merging
+# process
+DillPickle.*

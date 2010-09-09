@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using DillPickle.Framework.Exceptions;
 using DillPickle.Framework.Executor.Attributes;
 using DillPickle.Framework.Parser;
 using DillPickle.Framework.Runner;
@@ -19,6 +18,8 @@ mookid8000@gmail.com
 http://mookid.dk/oncode
 
 Dill-flavored Gherkin-goodness for your BDD needs
+
+Check out http://mookid.dk/oncode/dillpickle for more information.
 ")]
     public class Program : ICommando
     {
@@ -37,53 +38,7 @@ Dill-flavored Gherkin-goodness for your BDD needs
 
         static int Main(string[] args)
         {
-            try
-            {
-                return Go.Run<Program>(args);
-            }
-            catch (DillPickleException e)
-            {
-                Console.WriteLine(e.Message);
-
-                ShowHelpText();
-
-                return 1;
-            }
-            catch (ReflectionTypeLoadException e)
-            {
-                var loaderExceptions = string.Join(Environment.NewLine, e.LoaderExceptions.Select(ex => ex.ToString()).ToArray());
-
-                Console.WriteLine(@"{0}
-
-Loader exceptions:
-
-{1}", e, loaderExceptions);
-
-                return 1;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-
-                return 2;
-            }
-        }
-
-        static void ShowHelpText()
-        {
-            Console.WriteLine(@"
-Usage:
-
-    dill.exe <assembly-path> <feature-pattern>
-
-where <assembly-path> is a relative or absolute path to an assembly containing
-classes with action steps, and <feature-pattern> is a relative or absolute path
-(possiblt containing wildcars) to the location of your feature files.
-
-E.g.:
-
-    dill ..\src\MyProj\bin\Debug\Asm.dll ..\src\MyProj\Features\03*.feature
-");
+            return Go.Run<Program>(args);
         }
 
         public void Run()
