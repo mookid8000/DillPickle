@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using DillPickle.Framework.Executor.Attributes;
 using DillPickle.Framework.Parser;
 using DillPickle.Framework.Runner;
@@ -70,7 +71,7 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
             var parser = new GherkinParser();
             var featureFiles = Directory.GetFiles(Path.GetDirectoryName(FeaturePattern), Path.GetFileName(FeaturePattern));
             var featuresToRun = featureFiles
-                .SelectMany(fileName => parser.Parse(fileName, File.ReadAllText(fileName)).Features)
+                .SelectMany(fileName => parser.Parse(fileName, File.ReadAllText(fileName, Encoding.UTF8)).Features)
                 .ToArray();
 
             var actionStepsTypes = assembly.GetTypes()
