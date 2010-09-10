@@ -31,11 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="dill, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <ExecutableExtension>.exe</ExecutableExtension>
-      <HintPath>..\..\deploy\dill.exe</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -61,6 +56,12 @@
   <ItemGroup>
     <None Include="Features\02_Pickles_should_work.feature" />
     <None Include="Features\03_Pickles_should_work.feature" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DillPickle.Framework\DillPickle.Framework.csproj">
+      <Project>{99222B69-4839-4C83-AFAA-7BF52B16133B}</Project>
+      <Name>DillPickle.Framework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
