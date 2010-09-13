@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using DillPickle.Framework.Parser;
+using DillPickle.Framework.Parser.Api;
 
 namespace DillPickle.Framework.Runner.Api
 {

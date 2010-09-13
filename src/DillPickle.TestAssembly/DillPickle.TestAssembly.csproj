@@ -54,6 +54,7 @@
     <None Include="Features\01_Pickles_should_work.feature" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="Features\02_Pickles_should_work.feature" />
     <None Include="Features\03_Pickles_should_work.feature" />
   </ItemGroup>

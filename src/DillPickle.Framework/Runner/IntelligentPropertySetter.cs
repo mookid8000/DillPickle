@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DillPickle.Framework.Exceptions;
@@ -9,26 +10,30 @@ namespace DillPickle.Framework.Runner
     public class IntelligentPropertySetter : IPropertySetter
     {
         readonly IPropertySetter fallbackPropertySetter;
-        readonly Assembly assembly;
+        readonly HashSet<Assembly> assemblies = new HashSet<Assembly>();
         readonly IObjectActivator objectActivator;
 
-        public IntelligentPropertySetter(IPropertySetter fallbackPropertySetter, Assembly assembly, IObjectActivator objectActivator)
+        public IntelligentPropertySetter(IPropertySetter fallbackPropertySetter, IObjectActivator objectActivator)
         {
             this.fallbackPropertySetter = fallbackPropertySetter;
-            this.assembly = assembly;
             this.objectActivator = objectActivator;
+        }
+
+        public void AddAssembly(Assembly assembly)
+        {
+            assemblies.Add(assembly);
         }
 
         public void SetValue(object instance, PropertyInfo property, string value)
         {
             var targetType = property.PropertyType;
-            var thing = assembly.GetTypes()
+            var thing = assemblies.SelectMany(a => a.GetTypes())
                 .Select(t => new
                                  {
                                      Type = t,
                                      Attribute = t.GetCustomAttributes(typeof (TypeConverterAttribute), false)
-                                         .Cast<TypeConverterAttribute>()
-                                         .SingleOrDefault()
+                                 .Cast<TypeConverterAttribute>()
+                                 .SingleOrDefault()
                                  })
                 .Where(t => t.Attribute != null && IsTheRightConverter(t.Type, targetType))
                 .FirstOrDefault();

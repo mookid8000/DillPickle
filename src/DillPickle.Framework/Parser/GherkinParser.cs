@@ -4,10 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DillPickle.Framework.Exceptions;
+using DillPickle.Framework.Parser.Api;
 
 namespace DillPickle.Framework.Parser
 {
-    public class GherkinParser
+    public class GherkinParser : IGherkinParser
     {
         const StringComparison Comparison = StringComparison.CurrentCultureIgnoreCase;
         const string FeatureIntroduction = "feature:";

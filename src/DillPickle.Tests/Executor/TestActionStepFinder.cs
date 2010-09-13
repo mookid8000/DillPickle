@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using DillPickle.Framework.Parser.Api;
 using NUnit.Framework;
 using DillPickle.Framework.Executor;
 using DillPickle.Framework.Executor.Attributes;
-using DillPickle.Framework.Parser;
 
 namespace DillPickle.Tests.Executor
 {

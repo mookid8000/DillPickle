@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DillPickle.Framework.Parser;
+using DillPickle.Framework.Parser.Api;
 using DillPickle.Framework.Runner.Api;
 
 namespace DillPickle.Framework.Runner
 {
-    public class DefaultRunner
+    public class DefaultRunner : IRunner
     {
         readonly IFeatureRunner featureRunner;
 

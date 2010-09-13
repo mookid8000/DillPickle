@@ -16,7 +16,8 @@ namespace DillPickle.Tests
         public override void DoSetUp()
         {
             fallbackPropertySetter = Mock<IPropertySetter>();
-            sut = new IntelligentPropertySetter(fallbackPropertySetter, Assembly.GetExecutingAssembly(), new TrivialObjectActivator());
+            sut = new IntelligentPropertySetter(fallbackPropertySetter, new TrivialObjectActivator());
+            sut.AddAssembly(Assembly.GetExecutingAssembly());
         }
 
         [Test]

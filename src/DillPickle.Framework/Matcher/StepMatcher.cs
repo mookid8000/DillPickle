@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DillPickle.Framework.Executor;
-using DillPickle.Framework.Parser;
+using DillPickle.Framework.Parser.Api;
 
 namespace DillPickle.Framework.Matcher
 {

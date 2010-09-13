@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DillPickle.Framework.Exceptions;
+using DillPickle.Framework.Parser.Api;
 using NUnit.Framework;
 using DillPickle.Framework.Parser;
 

@@ -1,4 +1,4 @@
-using DillPickle.Framework.Parser;
+using DillPickle.Framework.Parser.Api;
 using DillPickle.Framework.Runner.Api;
 
 namespace DillPickle.Framework.Runner

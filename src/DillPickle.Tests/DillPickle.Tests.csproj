@@ -40,6 +40,7 @@
       <HintPath>..\..\lib\rhino\Rhino.Mocks.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -54,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FixtureBase.cs" />
+    <Compile Include="Runner\TestAssemblyLoader.cs" />
     <Compile Include="Runner\TestFeatureRunner.cs" />
     <Compile Include="Runner\TestDefaultRunner.cs" />
     <Compile Include="Executor\TestActionStepFinder.cs" />

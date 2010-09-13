@@ -1,7 +1,7 @@
 using System.Reflection;
 using DillPickle.Framework.Executor.Attributes;
 using DillPickle.Framework.Executor.Attributes.Base;
-using DillPickle.Framework.Parser;
+using DillPickle.Framework.Parser.Api;
 
 namespace DillPickle.Framework.Executor
 {

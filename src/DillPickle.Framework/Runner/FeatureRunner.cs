@@ -7,7 +7,7 @@ using DillPickle.Framework.Executor;
 using DillPickle.Framework.Executor.Attributes;
 using DillPickle.Framework.Executor.Attributes.Base;
 using DillPickle.Framework.Matcher;
-using DillPickle.Framework.Parser;
+using DillPickle.Framework.Parser.Api;
 using DillPickle.Framework.Runner.Api;
 
 namespace DillPickle.Framework.Runner

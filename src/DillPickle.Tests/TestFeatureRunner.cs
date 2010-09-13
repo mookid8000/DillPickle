@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DillPickle.Framework.Parser.Api;
 using DillPickle.Framework.Runner.Api;
 using NUnit.Framework;
 using DillPickle.Framework.Executor.Attributes;
-using DillPickle.Framework.Parser;
 using DillPickle.Framework.Runner;
 
 namespace DillPickle.Tests

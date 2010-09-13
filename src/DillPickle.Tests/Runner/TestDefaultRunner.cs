@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using DillPickle.Framework.Parser.Api;
 using DillPickle.Framework.Runner;
 using NUnit.Framework;
-using DillPickle.Framework.Parser;
 using DillPickle.Framework.Runner.Api;
 using Rhino.Mocks;
 
