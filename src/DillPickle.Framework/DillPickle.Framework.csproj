@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\CommandLineRunnerException.cs" />
     <Compile Include="Exceptions\DillPickleException.cs" />
     <Compile Include="Executor\ActionStepFinder.cs" />
     <Compile Include="Executor\ActionStepMethod.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="Executor\Attributes\Base\StepAttribute.cs" />
     <Compile Include="Executor\Attributes\ThenAttribute.cs" />
     <Compile Include="Executor\Attributes\WhenAttribute.cs" />
+    <Compile Include="Listeners\ConsoleWritingEventListener.cs" />
     <Compile Include="Matcher\StepMatch.cs" />
     <Compile Include="Matcher\StepMatcher.cs" />
     <Compile Include="Matcher\StringToken.cs" />
@@ -78,6 +80,8 @@
     <Compile Include="Parser\StepType.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Runner\Api\IListener.cs" />
+    <Compile Include="Runner\Api\CommandLineArguments.cs" />
+    <Compile Include="Runner\DefaultCommandLineRunner.cs" />
     <Compile Include="Runner\IntelligentPropertySetter.cs" />
     <Compile Include="Runner\Api\IPropertySetter.cs" />
     <Compile Include="Runner\TrivialObjectActivator.cs" />
