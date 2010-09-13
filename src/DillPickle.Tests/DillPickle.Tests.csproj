@@ -57,7 +57,6 @@
     <Compile Include="FixtureBase.cs" />
     <Compile Include="Runner\TestAssemblyLoader.cs" />
     <Compile Include="Runner\TestFeatureRunner.cs" />
-    <Compile Include="Runner\TestDefaultRunner.cs" />
     <Compile Include="Executor\TestActionStepFinder.cs" />
     <Compile Include="Parser\TestGherkinParser.cs" />
     <Compile Include="TestFeatureRunner.cs" />

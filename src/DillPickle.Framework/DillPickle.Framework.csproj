@@ -92,7 +92,6 @@
     <Compile Include="Runner\Api\IActionStepsFinder.cs" />
     <Compile Include="Runner\IntelligentPropertySetter.cs" />
     <Compile Include="Runner\Api\IPropertySetter.cs" />
-    <Compile Include="Runner\Api\IRunner.cs" />
     <Compile Include="Runner\TrivialObjectActivator.cs" />
     <Compile Include="Runner\DefaultListener.cs" />
     <Compile Include="Exceptions\FeatureExecutionException.cs" />
@@ -101,7 +100,6 @@
     <Compile Include="Runner\Api\IFeatureRunner.cs" />
     <Compile Include="Runner\Api\Result.cs" />
     <Compile Include="Runner\Api\IObjectActivator.cs" />
-    <Compile Include="Runner\DefaultRunner.cs" />
     <Compile Include="Runner\Api\ScenarioResult.cs" />
     <Compile Include="Runner\Api\StepResult.cs" />
     <Compile Include="Runner\TrivialPropertySetter.cs" />

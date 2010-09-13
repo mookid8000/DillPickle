@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using DillPickle.Framework.Listeners;
-using DillPickle.Framework.Parser;
 using DillPickle.Framework.Parser.Api;
 using DillPickle.Framework.Runner.Api;
 
@@ -12,21 +11,16 @@ namespace DillPickle.Framework.Runner
     public class DefaultCommandLineRunner : ICommandLineRunner
     {
         readonly IFeatureRunner featureRunner;
-        readonly IRunner runner;
-        readonly IGherkinParser parser;
-        readonly IFeatureFileFinder finder;
+        readonly IGherkinParser gherkinParser;
+        readonly IFeatureFileFinder featureFileFinder;
         readonly IActionStepsFinder actionStepsFinder;
 
-        public DefaultCommandLineRunner()
+        public DefaultCommandLineRunner(IActionStepsFinder actionStepsFinder, IFeatureRunner featureRunner, IFeatureFileFinder featureFileFinder, IGherkinParser gherkinParser)
         {
-            var objectActivator = new TrivialObjectActivator();
-            var propertySetter = new IntelligentPropertySetter(new TrivialPropertySetter(), objectActivator);
-            var assemblyLoader = new AssemblyLoader();
-            actionStepsFinder = new ActionStepsFinder(assemblyLoader);
-            featureRunner = new FeatureRunner(objectActivator, propertySetter);
-            runner = new DefaultRunner(featureRunner);
-            parser = new GherkinParser();
-            finder = new FeatureFileFinder();
+            this.actionStepsFinder = actionStepsFinder;
+            this.featureRunner = featureRunner;
+            this.featureFileFinder = featureFileFinder;
+            this.gherkinParser = gherkinParser;
         }
 
         public void Execute(CommandLineArguments arguments)
@@ -36,8 +30,8 @@ namespace DillPickle.Framework.Runner
 
             featureRunner.AddListener(new ConsoleWritingEventListener());
 
-            var featuresToRun = finder.Find(featurePattern)
-                .SelectMany(fileName => parser.Parse(fileName, File.ReadAllText(fileName, Encoding.UTF8)).Features)
+            var featuresToRun = featureFileFinder.Find(featurePattern)
+                .SelectMany(fileName => gherkinParser.Parse(fileName, File.ReadAllText(fileName, Encoding.UTF8)).Features)
                 .ToArray();
 
             Console.WriteLine("Found {0} features containing {1} executable scenarios", featuresToRun.Count(),
@@ -45,7 +39,7 @@ namespace DillPickle.Framework.Runner
 
             var actionStepsTypes = actionStepsFinder.FindTypesWithActionSteps(assemblyPath);
 
-            runner.Run(featuresToRun, actionStepsTypes);
+            featuresToRun.Select(f => featureRunner.Run(f, actionStepsTypes));
         }
     }
 }
