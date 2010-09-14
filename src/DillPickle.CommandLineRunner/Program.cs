@@ -1,4 +1,5 @@
-﻿using DillPickle.Framework.Parser;
+﻿using DillPickle.Framework.Io;
+using DillPickle.Framework.Parser;
 using DillPickle.Framework.Runner;
 using DillPickle.Framework.Runner.Api;
 using GoCommando;
@@ -46,10 +47,10 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
             var actionStepsFinder = new ActionStepsFinder(assemblyLoader);
             var featureRunner = new FeatureRunner(objectActivator, propertySetter);
             var featureFileFinder = new FeatureFileFinder();
+            var gherkinParser = new GherkinParser();
+            var fileReader = new FileReader();
 
-            var runner = new DefaultCommandLineRunner(actionStepsFinder,
-                                                      featureRunner, 
-                                                      featureFileFinder, new GherkinParser());
+            var runner = new DefaultCommandLineRunner(actionStepsFinder, featureRunner, featureFileFinder, gherkinParser, fileReader);
             
             runner.Execute(new CommandLineArguments
                                {

@@ -62,6 +62,9 @@
     <Compile Include="Executor\Attributes\Base\StepAttribute.cs" />
     <Compile Include="Executor\Attributes\ThenAttribute.cs" />
     <Compile Include="Executor\Attributes\WhenAttribute.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Io\FileReader.cs" />
+    <Compile Include="Io\Api\IFileReader.cs" />
     <Compile Include="Listeners\ConsoleWritingEventListener.cs" />
     <Compile Include="Matcher\StepMatch.cs" />
     <Compile Include="Matcher\StepMatcher.cs" />

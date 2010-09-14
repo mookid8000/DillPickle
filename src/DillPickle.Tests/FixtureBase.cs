@@ -5,6 +5,8 @@ namespace DillPickle.Tests
 {
     public class FixtureBase
     {
+        protected const string TempPath = @"c:\temp";
+
         [TestFixtureSetUp]
         public void TestFixtureSetUp()
         {
