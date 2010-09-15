@@ -10,6 +10,7 @@
     <ToolsFolder>..\tools</ToolsFolder>
     <ScriptsFolder>..\scripts</ScriptsFolder>
     <IlMerge>$(ToolsFolder)\ilmerge\Ilmerge.exe</IlMerge>
+    <zip>$(ToolsFolder)\7zip\7za.exe</zip>
   </PropertyGroup>
 
   <Target Name="build" DependsOnTargets="cleanBinaries;deleteBuildDestination;buildProjects;mergeBinaries" />
@@ -37,6 +38,7 @@
   <Target Name="mergeBinaries">
     <Message Text="Merging binaries"/>
     <MakeDir Directories="$(BuildDestination)"/>
-    <Exec Command="$(IlMerge) /out:$(BuildDestination)\dill.exe @(RunnerOutput) @(FrameworkOutput) @(GoCommando) /internalize:$(ScriptsFolder)\excluded_from_internalization.txt" />
+    <Exec Command="$(IlMerge) /attr:@(RunnerOutput) /out:$(BuildDestination)\dill.exe @(RunnerOutput) @(FrameworkOutput) @(GoCommando) /internalize:$(ScriptsFolder)\excluded_from_internalization.txt" />
+    <Exec Command="$(zip) a $(BuildDestination)\dill.zip $(BuildDestination)\*.* -tZip -mx=9" />
   </Target>
 </Project>
