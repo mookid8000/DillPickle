@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DillPickle.Framework.Extensions;
 using DillPickle.Framework.Parser.Api;
 using DillPickle.Framework.Runner;
 using DillPickle.Framework.Runner.Api;
@@ -59,10 +60,7 @@ Scenario: {0}", scenario.Headline);
             var tabs = 3;
 
             WriteLine(color, tabs, "| " + string.Join(" | ", keys.Select(k => k.PadRight(MaxWidth(parameters, k))).ToArray()) + " |");
-            foreach(var row in parameters)
-            {
-                WriteLine(color, tabs, "| " + string.Join(" | ", keys.Select(key => row[key].PadRight(MaxWidth(parameters, key))).ToArray()) + " |");
-            }
+            parameters.ForEach(r => WriteLine(color, tabs, "| " + string.Join(" | ", keys.Select(key => r[key].PadRight(MaxWidth(parameters, key))).ToArray()) + " |"));
         }
 
         int MaxWidth(IEnumerable<Dictionary<string, string>> parameters, string key)
@@ -75,7 +73,7 @@ Scenario: {0}", scenario.Headline);
             if (!errorMessages.Any()) return;
 
             WriteLine();
-            errorMessages.ForEach(msg => WriteLine(ConsoleColor.Red, 2, msg));
+            errorMessages.ForEach(msg => WriteLineRaw(ConsoleColor.Red, 2, msg));
             errorMessages.Clear();
         }
 
@@ -86,15 +84,20 @@ Scenario: {0}", scenario.Headline);
 
         void WriteLine(ConsoleColor color, int tabs, string text, params object[] objs)
         {
+            WriteLineRaw(color, tabs, string.Format(text, objs));
+        }
+
+        void WriteLineRaw(ConsoleColor color, int tabs, string text)
+        {
             Console.ForegroundColor = color;
 
-            using (var reader = new StringReader(string.Format(text, objs)))
+            using (var reader = new StringReader(text))
             {
                 string line;
 
                 while ((line = reader.ReadLine()) != null)
                 {
-                    Console.WriteLine(new string(' ', tabs*2) + line);
+                    Console.WriteLine(new string(' ', tabs * 2) + line);
                 }
             }
 
