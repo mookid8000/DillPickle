@@ -145,9 +145,15 @@ namespace DillPickle.Framework.Runner
 
                     stepResult.Result = Result.Success;
                 }
-                catch (FeatureExecutionException)
+                catch (TargetInvocationException tae)
                 {
-                    throw;
+                    if (tae.InnerException is FeatureExecutionException)
+                    {
+                        throw;
+                    }
+
+                    stepResult.Result = Result.Failed;
+                    stepResult.ErrorMessage = tae.InnerException.ToString();
                 }
                 catch (Exception e)
                 {
