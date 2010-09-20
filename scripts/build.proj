@@ -39,6 +39,7 @@
     <Message Text="Merging binaries"/>
     <MakeDir Directories="$(BuildDestination)"/>
     <Exec Command="$(IlMerge) /attr:@(RunnerOutput) /out:$(BuildDestination)\dill.exe @(RunnerOutput) @(FrameworkOutput) @(GoCommando) /internalize:$(ScriptsFolder)\excluded_from_internalization.txt" />
+    <!--<Copy SourceFiles="" DestinationFolder="" />-->
     <Exec Command="$(zip) a $(BuildDestination)\dill.zip $(BuildDestination)\*.* -tZip -mx=9" />
   </Target>
 </Project>

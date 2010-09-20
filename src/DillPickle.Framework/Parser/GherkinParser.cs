@@ -8,6 +8,9 @@ using DillPickle.Framework.Parser.Api;
 
 namespace DillPickle.Framework.Parser
 {
+    /// <summary>
+    /// Encapsulates the parsing of Gherkin-text into a (pseudo-) AST.
+    /// </summary>
     public class GherkinParser : IGherkinParser
     {
         const StringComparison Comparison = StringComparison.CurrentCultureIgnoreCase;
@@ -16,11 +19,22 @@ namespace DillPickle.Framework.Parser
         const string ScenarioOutlineIntroduction = "scenario outline:";
         const string ExamplesIntroduction = "examples:";
 
+        ///<summary>
+        /// Call this function to parse a piece of text whose file origin is unknown or not available.
+        ///</summary>
+        ///<param name="text">Gherkin-text to parse</param>
+        ///<returns>A parse result including the AST</returns>
         public ParseResult Parse(string text)
         {
             return Parse("n/a", text);
         }
 
+        ///<summary>
+        /// Call this function to parse a piece of text, specifying its file origin (which will generate better error messages).
+        ///</summary>
+        ///<param name="fileName">Name of file origin of the Gherkin-text</param>
+        ///<param name="text">Gherkin-text to parse</param>
+        ///<returns>A parse result including the AST</returns>
         public ParseResult Parse(string fileName, string text)
         {
             var features = new List<Feature>();
