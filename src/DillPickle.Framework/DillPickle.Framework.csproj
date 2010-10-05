@@ -74,7 +74,7 @@
     <Compile Include="Matcher\VariableToken.cs" />
     <Compile Include="Parser\Api\Feature.cs" />
     <Compile Include="Exceptions\GherkinParseException.cs" />
-    <Compile Include="Parser\GherkinParser.cs" />
+    <Compile Include="Parser\StupidGherkinParser.cs" />
     <Compile Include="Parser\Api\IGherkinParser.cs" />
     <Compile Include="Parser\Api\ParseResult.cs" />
     <Compile Include="Parser\Api\Scenario.cs" />

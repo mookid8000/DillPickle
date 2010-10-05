@@ -49,6 +49,7 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
 
         public void Run()
         {
+            // di ftw, oh my!
             var objectActivator = new TrivialObjectActivator();
             var fallbackPropertySetter = new TrivialPropertySetter();
             var propertySetter = new IntelligentPropertySetter(fallbackPropertySetter, objectActivator);
@@ -56,7 +57,7 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
             var actionStepsFinder = new ActionStepsFinder(assemblyLoader);
             var featureRunner = new FeatureRunner(objectActivator, propertySetter);
             var featureFileFinder = new FeatureFileFinder();
-            var gherkinParser = new GherkinParser();
+            var gherkinParser = new StupidGherkinParser();
             var fileReader = new FileReader();
 
             var runner = new DefaultCommandLineRunner(actionStepsFinder, featureRunner, featureFileFinder, gherkinParser, fileReader);

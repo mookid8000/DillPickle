@@ -19,7 +19,7 @@ namespace DillPickle.Tests.Integration
             var runner = new FeatureRunner(activator,
                                            new IntelligentPropertySetter(new TrivialPropertySetter(), activator));
 
-            var parser = new GherkinParser();
+            var parser = new StupidGherkinParser();
             var result =
                 parser.Parse(
                     @"

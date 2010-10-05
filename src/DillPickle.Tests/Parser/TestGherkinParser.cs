@@ -11,11 +11,11 @@ namespace DillPickle.Tests.Parser
     [TestFixture]
     public class TestGherkinParser : FixtureBase
     {
-        GherkinParser parser;
+        StupidGherkinParser parser;
 
         public override void DoSetUp()
         {
-            parser = new GherkinParser();
+            parser = new StupidGherkinParser();
         }
 
         [Test]
