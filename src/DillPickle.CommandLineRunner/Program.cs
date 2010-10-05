@@ -72,7 +72,7 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
 
         string[] Split(string text)
         {
-            return (text ?? "").Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            return (text ?? "").Split(",;".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }
