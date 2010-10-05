@@ -9,7 +9,7 @@ namespace DillPickle.Tests.Runner
         [Test]
         public void CanCompareFilters()
         {
-            AssertEqual(new TagFilter(new string[0], new string[0]),
+            AssertEqual(TagFilter.Empty(),
                         new TagFilter(new string[0], new string[0]));
 
             AssertEqual(new TagFilter(new[] {"tag1", "tag2"}, new[] {"tag3", "tag4"}),

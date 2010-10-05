@@ -48,7 +48,7 @@ namespace DillPickle.Framework.Runner
                 foreach (var scenario in feature.Scenarios.SelectMany(s => s.GetExecutableScenarios()).Where(s => filter.IsSatisfiedBy(s.Tags)))
                 {
                     BeforeScenario(feature, scenario, executionObjects);
-                    var result = ExecuteScenario(scenario, feature, matches, executionObjects);
+                    var result = ExecuteScenario(scenario, feature, matches, executionObjects, options);
                     featureResult.AddScenarioResult(result);
                     AfterScenario(feature, scenario, result, executionObjects);
                 }
@@ -108,14 +108,14 @@ namespace DillPickle.Framework.Runner
                 .Distinct();
         }
 
-        ScenarioResult ExecuteScenario(Scenario scenario, Feature feature, IEnumerable<FoundMatch> matches, Dictionary<Type, ActionStepsObjectHolder> executionObjects)
+        ScenarioResult ExecuteScenario(Scenario scenario, Feature feature, IEnumerable<FoundMatch> matches, Dictionary<Type, ActionStepsObjectHolder> executionObjects, RunnerOptions options)
         {
             var scenarioResult = new ScenarioResult(scenario.Headline);
 
             foreach (var step in feature.BackgroundSteps.Concat(scenario.Steps))
             {
                 BeforeStep(scenario, feature, step, executionObjects);
-                var result = ExecuteStep(step, matches, executionObjects);
+                var result = ExecuteStep(step, matches, executionObjects, options);
                 scenarioResult.AddStepResult(result);
                 AfterStep(scenario, feature, step, result, executionObjects);
             }
@@ -123,7 +123,7 @@ namespace DillPickle.Framework.Runner
             return scenarioResult;
         }
 
-        StepResult ExecuteStep(Step step, IEnumerable<FoundMatch> matches, IDictionary<Type, ActionStepsObjectHolder> executionObjects)
+        StepResult ExecuteStep(Step step, IEnumerable<FoundMatch> matches, IDictionary<Type, ActionStepsObjectHolder> executionObjects, RunnerOptions options)
         {
             var stepResult = new StepResult(step.Text);
 
@@ -142,7 +142,10 @@ namespace DillPickle.Framework.Runner
                     var parameters = GenerateParameterList(method.ActionStepMethod, method.StepMatch);
                     var methodInfo = method.ActionStepMethod.MethodInfo;
 
-                    methodInfo.Invoke(targetObject, parameters);
+                    if (!options.DruRun)
+                    {
+                        methodInfo.Invoke(targetObject, parameters);
+                    }
 
                     stepResult.Result = Result.Success;
                 }

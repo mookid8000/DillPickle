@@ -2,6 +2,10 @@ namespace DillPickle.Framework.Runner
 {
     public class RunnerOptions
     {
+        public RunnerOptions()
+        {
+            Filter = TagFilter.Empty();
+        }
         public TagFilter Filter { get; set; }
         public bool DruRun { get; set; }
 

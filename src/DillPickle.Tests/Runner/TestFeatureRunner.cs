@@ -188,7 +188,7 @@ but was:
         {
             return new RunnerOptions
                        {
-                           Filter = new TagFilter(new string[0], new string[0]),
+                           Filter = TagFilter.Empty(),
                            DruRun = false,
                        };
         }
@@ -458,6 +458,34 @@ but was:
             Assert.AreEqual("joe bananas", ClassWithActionSteps.NewName);
             Assert.AreEqual("something", ClassWithActionSteps.What);
             Assert.AreEqual("fantastic", ClassWithActionSteps.Description);
+
+            Assert.IsTrue(ClassWithActionSteps.Disposed);
+        }
+
+        [Test]
+        public void DoesNotRunStuffWhenDryRunning()
+        {
+            var feature = new Feature("feature", NoTags())
+                              {
+                                  Scenarios =
+                                      {
+                                          new ExecutableScenario("scenario", NoTags())
+                                              {
+                                                  Steps =
+                                                      {
+                                                          Step.Given("i am logged in as administrator"),
+                                                          Step.When(@"i change my name to ""joe bananas"""),
+                                                          Step.Then("something fantastic happens")
+                                                      }
+                                              }
+                                      }
+                              };
+
+            runner.Run(feature, new[] {typeof (ClassWithActionSteps)}, new RunnerOptions {DruRun = true});
+
+            Assert.AreEqual(0, ClassWithActionSteps.GivenCalls);
+            Assert.AreEqual(0, ClassWithActionSteps.WhenCalls);
+            Assert.AreEqual(0, ClassWithActionSteps.ThenCalls);
 
             Assert.IsTrue(ClassWithActionSteps.Disposed);
         }

@@ -59,5 +59,10 @@ namespace DillPickle.Framework.Runner
         {
             return !Equals(left, right);
         }
+
+        public static TagFilter Empty()
+        {
+            return new TagFilter(new string[0], new string[0]);
+        }
     }
 }

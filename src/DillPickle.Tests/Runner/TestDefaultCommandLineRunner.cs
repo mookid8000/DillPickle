@@ -62,11 +62,6 @@ namespace DillPickle.Tests.Runner
             featureRunner.AssertWasNotCalled(r => r.Run(feature3, actionStepsTypes, expectedOptions));
         }
 
-        TagFilter NullFilter()
-        {
-            return new TagFilter(new string[0], new string[0]);
-        }
-
         Feature Stub(string fileName, string gherkinText, string featureName, string[] featureTags)
         {
             fileReader.Stub(r => r.Read(fileName, Encoding.UTF8)).Return(gherkinText);

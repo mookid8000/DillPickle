@@ -69,7 +69,7 @@ Unexpected:
         {
             return new RunnerOptions
                        {
-                           Filter = new TagFilter(new string[0], new string[0]),
+                           Filter = TagFilter.Empty(),
                            DruRun = false,
                        };
         }
