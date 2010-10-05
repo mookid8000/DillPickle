@@ -24,12 +24,12 @@ namespace DillPickle.Framework.Runner
             this.propertySetter = propertySetter;
         }
 
-        public FeatureResult Run(Feature feature, Type[] types, TagFilter filter)
+        public FeatureResult Run(Feature feature, Type[] types, RunnerOptions options)
         {
-            return ExecuteFeature(feature, types, filter);
+            return ExecuteFeature(feature, types, options);
         }
 
-        FeatureResult ExecuteFeature(Feature feature, Type[] types, TagFilter filter)
+        FeatureResult ExecuteFeature(Feature feature, Type[] types, RunnerOptions options)
         {
             var featureResult = new FeatureResult(feature);
             var matcher = new StepMatcher();
@@ -39,6 +39,7 @@ namespace DillPickle.Framework.Runner
             var actionStepsClasses = finder.Find(types);
             var matches = MatchStepsToActionMethods(steps, actionStepsClasses, matcher);
             var executionObjects = GetExecutionObjects(matches);
+            var filter = options.Filter;
 
             try
             {

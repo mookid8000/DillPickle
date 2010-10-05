@@ -96,6 +96,7 @@
     <Compile Include="Runner\Api\IActionStepsFinder.cs" />
     <Compile Include="Runner\IntelligentPropertySetter.cs" />
     <Compile Include="Runner\Api\IPropertySetter.cs" />
+    <Compile Include="Runner\RunnerOptions.cs" />
     <Compile Include="Runner\TagFilter.cs" />
     <Compile Include="Runner\TrivialObjectActivator.cs" />
     <Compile Include="Runner\DefaultListener.cs" />

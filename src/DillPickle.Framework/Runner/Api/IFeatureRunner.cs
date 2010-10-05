@@ -8,7 +8,7 @@ namespace DillPickle.Framework.Runner.Api
     ///</summary>
     public interface IFeatureRunner
     {
-        FeatureResult Run(Feature feature, Type[] types, TagFilter filter);
+        FeatureResult Run(Feature feature, Type[] types, RunnerOptions filter);
         void AddListener(IListener listener);
     }
 }

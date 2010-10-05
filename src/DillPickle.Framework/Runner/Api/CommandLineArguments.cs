@@ -24,5 +24,10 @@ namespace DillPickle.Framework.Runner.Api
         /// Optionally specified which tags to exclude (thus executing everything EXCEPT features/scenarios tagged with that)
         ///</summary>
         public string[] TagsToExclude { get; set; }
+
+        ///<summary>
+        /// Indicates whether the runner should only simulate running the action steps
+        ///</summary>
+        public bool DruRun { get; set; }
     }
 }

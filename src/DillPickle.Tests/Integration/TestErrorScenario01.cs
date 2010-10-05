@@ -65,9 +65,13 @@ Unexpected:
                           ActionSteps.Calls.Except(expectedCalls).JoinToString(Environment.NewLine));
         }
 
-        TagFilter NullFilter()
+        RunnerOptions NullFilter()
         {
-            return new TagFilter(new string[0], new string[0]);
+            return new RunnerOptions
+                       {
+                           Filter = new TagFilter(new string[0], new string[0]),
+                           DruRun = false,
+                       };
         }
 
         [ActionSteps]

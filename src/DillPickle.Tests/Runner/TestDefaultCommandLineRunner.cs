@@ -51,11 +51,15 @@ namespace DillPickle.Tests.Runner
                                 TagsToInclude = new[] {"bom"}
                             });
 
-            var expectedFilter = new TagFilter(new[] {"bom"}, new[] {"bim"});
+            var expectedOptions = new RunnerOptions
+                                     {
+                                         Filter = new TagFilter(new[] {"bom"}, new[] {"bim"}),
+                                         DruRun = false,
+                                     };
 
-            featureRunner.AssertWasCalled(r => r.Run(feature1, actionStepsTypes, expectedFilter));
-            featureRunner.AssertWasCalled(r => r.Run(feature2, actionStepsTypes, expectedFilter));
-            featureRunner.AssertWasNotCalled(r => r.Run(feature3, actionStepsTypes, expectedFilter));
+            featureRunner.AssertWasCalled(r => r.Run(feature1, actionStepsTypes, expectedOptions));
+            featureRunner.AssertWasCalled(r => r.Run(feature2, actionStepsTypes, expectedOptions));
+            featureRunner.AssertWasNotCalled(r => r.Run(feature3, actionStepsTypes, expectedOptions));
         }
 
         TagFilter NullFilter()

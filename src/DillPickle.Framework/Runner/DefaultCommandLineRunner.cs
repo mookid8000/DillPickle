@@ -47,7 +47,8 @@ namespace DillPickle.Framework.Runner
 
             var actionStepsTypes = actionStepsFinder.FindTypesWithActionSteps(assemblyPath);
 
-            featuresToRun.ForEach(f => featureRunner.Run(f, actionStepsTypes, filter));
+            var options = new RunnerOptions {Filter = filter, DruRun = arguments.DruRun};
+            featuresToRun.ForEach(f => featureRunner.Run(f, actionStepsTypes, options));
         }
     }
 }
