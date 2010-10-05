@@ -9,6 +9,9 @@ using DillPickle.Framework.Runner.Api;
 
 namespace DillPickle.Framework.Runner
 {
+    ///<summary>
+    /// Command line runner that runs features and stuff, without too many surprises
+    ///</summary>
     public class DefaultCommandLineRunner : ICommandLineRunner
     {
         readonly IFeatureRunner featureRunner;
@@ -33,15 +36,18 @@ namespace DillPickle.Framework.Runner
 
             featureRunner.AddListener(new ConsoleWritingEventListener());
 
+            var filter = new TagFilter(arguments.TagsToInclude, arguments.TagsToExclude);
+
             var featuresToRun = featureFileFinder.Find(featurePattern)
-                .SelectMany(fileName => gherkinParser.Parse(fileName, fileReader.Read(fileName, Encoding.UTF8)).Features);
+                .SelectMany(fileName => gherkinParser.Parse(fileName, fileReader.Read(fileName, Encoding.UTF8)).Features)
+                .Where(f => filter.IsSatisfiedBy(f.Tags));
 
             Console.WriteLine("Found {0} features containing {1} executable scenarios", featuresToRun.Count(),
                               featuresToRun.Sum(f => f.Scenarios.Count));
 
             var actionStepsTypes = actionStepsFinder.FindTypesWithActionSteps(assemblyPath);
 
-            featuresToRun.ForEach(f => featureRunner.Run(f, actionStepsTypes));
+            featuresToRun.ForEach(f => featureRunner.Run(f, actionStepsTypes, filter));
         }
     }
 }

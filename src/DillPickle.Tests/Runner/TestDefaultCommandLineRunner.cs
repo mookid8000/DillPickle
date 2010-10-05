@@ -7,6 +7,7 @@ using DillPickle.Framework.Runner;
 using DillPickle.Framework.Runner.Api;
 using NUnit.Framework;
 using Rhino.Mocks;
+using Shouldly;
 
 namespace DillPickle.Tests.Runner
 {
@@ -33,16 +34,11 @@ namespace DillPickle.Tests.Runner
         [Test]
         public void DoesItsThing()
         {
-            featureFileFinder.Stub(f => f.Find("weird pattern")).Return(new[] {"file1", "file2"});
+            featureFileFinder.Stub(f => f.Find("weird pattern")).Return(new[] {"file1", "file2", "file3"});
 
-            fileReader.Stub(r => r.Read("file1", Encoding.UTF8)).Return("bla1");
-            fileReader.Stub(r => r.Read("file2", Encoding.UTF8)).Return("bla2");
-
-            var feature1 = new Feature("feature1", new string[0]);
-            var feature2 = new Feature("feature2", new string[0]);
-            
-            gherkinParser.Stub(p => p.Parse("file1", "bla1")).Return(new ParseResult(new List<Feature>{feature1}));
-            gherkinParser.Stub(p => p.Parse("file2", "bla2")).Return(new ParseResult(new List<Feature>{feature2}));
+            var feature1 = Stub("file1", "bla1", "feature1", new[] { "bom" });
+            var feature2 = Stub("file2", "bla2", "feature2", new[] { "bom" });
+            var feature3 = Stub("file3", "bla3", "feature3", new[] { "bim" });
 
             var actionStepsTypes = new Type[0];
             actionStepsFinder.Stub(a => a.FindTypesWithActionSteps("some path")).Return(actionStepsTypes);
@@ -50,11 +46,32 @@ namespace DillPickle.Tests.Runner
             sut.Execute(new CommandLineArguments
                             {
                                 AssemblyPath = "some path",
-                                FeaturePattern = "weird pattern"
+                                FeaturePattern = "weird pattern",
+                                TagsToExclude = new[] {"bim"},
+                                TagsToInclude = new[] {"bom"}
                             });
 
-            featureRunner.AssertWasCalled(r => r.Run(feature1, actionStepsTypes));
-            featureRunner.AssertWasCalled(r => r.Run(feature2, actionStepsTypes));
+            var expectedFilter = new TagFilter(new[] {"bom"}, new[] {"bim"});
+
+            featureRunner.AssertWasCalled(r => r.Run(feature1, actionStepsTypes, expectedFilter));
+            featureRunner.AssertWasCalled(r => r.Run(feature2, actionStepsTypes, expectedFilter));
+            featureRunner.AssertWasNotCalled(r => r.Run(feature3, actionStepsTypes, expectedFilter));
+        }
+
+        TagFilter NullFilter()
+        {
+            return new TagFilter(new string[0], new string[0]);
+        }
+
+        Feature Stub(string fileName, string gherkinText, string featureName, string[] featureTags)
+        {
+            fileReader.Stub(r => r.Read(fileName, Encoding.UTF8)).Return(gherkinText);
+
+            var feature = new Feature(featureName, featureTags);
+            
+            gherkinParser.Stub(p => p.Parse(fileName, gherkinText)).Return(new ParseResult(new List<Feature> { feature }));
+            
+            return feature;
         }
     }
 }

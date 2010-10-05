@@ -22,6 +22,57 @@ namespace DillPickle.Tests.Runner
         }
 
         [Test]
+        public void IncludesTagsLikeExpected()
+        {
+            JustRemembersIfItHasBeenRun.Reset();
+
+            var feature = new Feature("name", NoTags())
+                              {
+                                  Scenarios =
+                                      {
+                                          new ExecutableScenario("scenario1", new[] {"tag"})
+                                              {
+                                                  Steps = {Step.Given("should be run")}
+                                              },
+                                          new ExecutableScenario("scenario2", NoTags())
+                                              {
+                                                  Steps = {Step.Given("should not be run")}
+                                              }
+                                      }
+                              };
+
+            runner.Run(feature, new[] {typeof (JustRemembersIfItHasBeenRun)}, new TagFilter(new[] {"tag"}, NoTags()));
+
+            Assert.IsTrue(JustRemembersIfItHasBeenRun.ShouldRunWasGood);
+            Assert.IsTrue(JustRemembersIfItHasBeenRun.ShouldNotRunWasGood);
+        }
+
+        [ActionSteps]
+        class JustRemembersIfItHasBeenRun
+        {
+            public static bool ShouldRunWasGood { get; set; }
+            public static bool ShouldNotRunWasGood { get; set; }
+
+            public static void Reset()
+            {
+                ShouldRunWasGood = false;
+                ShouldNotRunWasGood = true;
+            }
+
+            [Given("should be run")]
+            public void GivenSomething()
+            {
+                ShouldRunWasGood = true;
+            }
+
+            [Given("should not be run")]
+            public void GivenSomethingElse()
+            {
+                ShouldNotRunWasGood = false;
+            }
+        }
+
+        [Test]
         public void HooksAreCalledAsExpected()
         {
             var feature = new Feature("feature", NoTags())
@@ -56,7 +107,7 @@ namespace DillPickle.Tests.Runner
                                       }
                               };
 
-            runner.Run(feature, new[] {typeof (RecordsTheOrderOfThings)});
+            runner.Run(feature, new[] { typeof(RecordsTheOrderOfThings) }, NullFilter());
 
             var expectedCalls = new[]
                                     {
@@ -122,6 +173,11 @@ but was:
     {1}
 ", expectedCalls.JoinToString(", "),
                           RecordsTheOrderOfThings.WhatHappened.JoinToString(", "));
+        }
+
+        TagFilter NullFilter()
+        {
+            return new TagFilter(new string[0], new string[0]);
         }
 
         public enum What
@@ -226,7 +282,7 @@ but was:
                                               }
                                       });
 
-            runner.Run(feature, new[] {typeof (HasSomeSteps)});
+            runner.Run(feature, new[] { typeof(HasSomeSteps) }, NullFilter());
 
             Assert.IsTrue(HasSomeSteps.GivenCalled);
             Assert.IsTrue(HasSomeSteps.WhenCalled);
@@ -308,7 +364,7 @@ but was:
                                               }
                                       });
 
-            runner.Run(feature, new[]{typeof(Cucumbulator)});
+            runner.Run(feature, new[] { typeof(Cucumbulator) }, NullFilter());
 
             Assert.AreEqual(2, Cucumbulator.Calls.Count);
             
@@ -372,8 +428,8 @@ but was:
                                               }
                                       }
                               };
-            
-            var result = runner.Run(feature, new[] {typeof (ClassWithActionSteps)});
+
+            var result = runner.Run(feature, new[] { typeof(ClassWithActionSteps) }, NullFilter());
 
             Assert.AreEqual("feature", result.Headline);
             Assert.AreEqual("scenario", result.ScenarioResults[0].Headline);
@@ -430,7 +486,7 @@ but was:
                                };
 
             var feature = new Feature("woot!", NoTags()) {Scenarios = {scenario}};
-            runner.Run(feature, new[] {typeof (ClassWithMultilineStepArguments)});
+            runner.Run(feature, new[] {typeof (ClassWithMultilineStepArguments)}, NullFilter());
 
             var dicts = ClassWithMultilineStepArguments.Given;
             Assert.IsNotNull(dicts);

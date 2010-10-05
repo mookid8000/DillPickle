@@ -1,4 +1,5 @@
-﻿using DillPickle.Framework.Io;
+﻿using System;
+using DillPickle.Framework.Io;
 using DillPickle.Framework.Parser;
 using DillPickle.Framework.Runner;
 using DillPickle.Framework.Runner.Api;
@@ -33,6 +34,14 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
         [NamedArgument("dryrun", "d")]
         public bool DryRun { get; set; }
 
+        [NamedArgument("include", "i")]
+        [Description("Specifies which tags to include")]
+        public string Include { get; set; }
+
+        [NamedArgument("exclude", "e")]
+        [Description("Specifies which tags to exclude")]
+        public string Exclude { get; set; }
+
         static int Main(string[] args)
         {
             return Go.Run<Program>(args);
@@ -56,7 +65,14 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
                                {
                                    AssemblyPath = AssemblyPath,
                                    FeaturePattern = FeaturePattern,
+                                   TagsToInclude = Split(Include),
+                                   TagsToExclude = Split(Exclude),
                                });
+        }
+
+        string[] Split(string text)
+        {
+            return (text ?? "").Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }

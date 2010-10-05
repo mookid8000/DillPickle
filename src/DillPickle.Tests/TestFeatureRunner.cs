@@ -56,7 +56,7 @@ namespace DillPickle.Tests
                                       }
                               };
 
-            runner.Run(feature, new[] {typeof (RecordsTheOrderOfThings)});
+            runner.Run(feature, new[] { typeof(RecordsTheOrderOfThings) }, NullFilter());
 
             var expectedCalls = new[]
                                     {
@@ -122,6 +122,11 @@ but was:
     {1}
 ", expectedCalls.JoinToString(", "),
  RecordsTheOrderOfThings.WhatHappened.JoinToString(", "));
+        }
+
+        TagFilter NullFilter()
+        {
+            return new TagFilter(new string[0], new string[0]);
         }
 
         public enum What
@@ -226,7 +231,7 @@ but was:
                                               }
                                       });
 
-            runner.Run(feature, new[] {typeof (HasSomeSteps)});
+            runner.Run(feature, new[] { typeof(HasSomeSteps) }, NullFilter());
 
             Assert.IsTrue(HasSomeSteps.GivenCalled);
             Assert.IsTrue(HasSomeSteps.WhenCalled);
@@ -308,7 +313,7 @@ but was:
                                               }
                                       });
 
-            runner.Run(feature, new[]{typeof(Cucumbulator)});
+            runner.Run(feature, new[] { typeof(Cucumbulator) }, NullFilter());
 
             Assert.AreEqual(2, Cucumbulator.Calls.Count);
             
@@ -372,8 +377,8 @@ but was:
                                               }
                                       }
                               };
-            
-            var result = runner.Run(feature, new[] {typeof (ClassWithActionSteps)});
+
+            var result = runner.Run(feature, new[] { typeof(ClassWithActionSteps) }, NullFilter());
 
             Assert.AreEqual("feature", result.Headline);
             Assert.AreEqual("scenario", result.ScenarioResults[0].Headline);
@@ -430,7 +435,7 @@ but was:
                                };
 
             var feature = new Feature("woot!", NoTags()) {Scenarios = {scenario}};
-            runner.Run(feature, new[] {typeof (ClassWithMultilineStepArguments)});
+            runner.Run(feature, new[] { typeof(ClassWithMultilineStepArguments) }, NullFilter());
 
             var dicts = ClassWithMultilineStepArguments.Given;
             Assert.IsNotNull(dicts);

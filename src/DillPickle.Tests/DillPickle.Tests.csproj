@@ -39,6 +39,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\rhino\Rhino.Mocks.dll</HintPath>
     </Reference>
+    <Reference Include="Shouldly, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\shouldly\Shouldly.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -62,6 +66,7 @@
     <Compile Include="Runner\TestFeatureRunner.cs" />
     <Compile Include="Executor\TestActionStepFinder.cs" />
     <Compile Include="Parser\TestGherkinParser.cs" />
+    <Compile Include="Runner\TestTagFilter.cs" />
     <Compile Include="Runner\TestTrivialObjectActivator.cs" />
     <Compile Include="Runner\TestTrivialPropertySetter.cs" />
     <Compile Include="TestFeatureRunner.cs" />

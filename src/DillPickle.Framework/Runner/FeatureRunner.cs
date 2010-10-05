@@ -24,12 +24,12 @@ namespace DillPickle.Framework.Runner
             this.propertySetter = propertySetter;
         }
 
-        public FeatureResult Run(Feature feature, Type[] types)
+        public FeatureResult Run(Feature feature, Type[] types, TagFilter filter)
         {
-            return ExecuteFeature(feature, types);
+            return ExecuteFeature(feature, types, filter);
         }
 
-        FeatureResult ExecuteFeature(Feature feature, Type[] types)
+        FeatureResult ExecuteFeature(Feature feature, Type[] types, TagFilter filter)
         {
             var featureResult = new FeatureResult(feature);
             var matcher = new StepMatcher();
@@ -44,7 +44,7 @@ namespace DillPickle.Framework.Runner
             {
                 BeforeFeature(feature, executionObjects);
 
-                foreach (var scenario in feature.Scenarios.SelectMany(s => s.GetExecutableScenarios()))
+                foreach (var scenario in feature.Scenarios.SelectMany(s => s.GetExecutableScenarios()).Where(s => filter.IsSatisfiedBy(s.Tags)))
                 {
                     BeforeScenario(feature, scenario, executionObjects);
                     var result = ExecuteScenario(scenario, feature, matches, executionObjects);
@@ -145,20 +145,22 @@ namespace DillPickle.Framework.Runner
 
                     stepResult.Result = Result.Success;
                 }
-                catch (TargetInvocationException tae)
+                catch (TargetInvocationException ex)
                 {
-                    if (tae.InnerException is FeatureExecutionException)
+                    var innerException = ex.InnerException;
+
+                    if (innerException is FeatureExecutionException)
                     {
                         throw;
                     }
 
                     stepResult.Result = Result.Failed;
-                    stepResult.ErrorMessage = tae.InnerException.ToString();
+                    stepResult.ErrorMessage = innerException.ToString();
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
                     stepResult.Result = Result.Failed;
-                    stepResult.ErrorMessage = e.ToString();
+                    stepResult.ErrorMessage = ex.ToString();
                 }
             }
 

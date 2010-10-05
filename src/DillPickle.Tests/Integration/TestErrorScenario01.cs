@@ -42,7 +42,7 @@ Feature: Show all notes
       | Martha Wainwright     | This Life               |
 ");
 
-            result.Features.ForEach(f => runner.Run(f, new[] {typeof (ActionSteps)}));
+            result.Features.ForEach(f => runner.Run(f, new[] {typeof (ActionSteps)}, NullFilter()));
 
             var expectedCalls =
                 new[]
@@ -63,6 +63,11 @@ Unexpected:
 ",
                           expectedCalls.Except(ActionSteps.Calls).JoinToString(Environment.NewLine),
                           ActionSteps.Calls.Except(expectedCalls).JoinToString(Environment.NewLine));
+        }
+
+        TagFilter NullFilter()
+        {
+            return new TagFilter(new string[0], new string[0]);
         }
 
         [ActionSteps]
