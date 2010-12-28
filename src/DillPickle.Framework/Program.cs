@@ -7,7 +7,7 @@ using GoCommando;
 using GoCommando.Api;
 using GoCommando.Attributes;
 
-namespace DillPickle.CommandLineRunner
+namespace DillPickle.Framework
 {
     [Banner(@"DillPickle
 

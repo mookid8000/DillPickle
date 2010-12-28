@@ -13,7 +13,7 @@ http://mookid.dk/oncode"
         )]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Mogens Heller Grabe")]
-[assembly: AssemblyProduct("DillPickle.Framework")]
+[assembly: AssemblyProduct("dill")]
 [assembly: AssemblyCopyright("Copyright ©  2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

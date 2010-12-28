@@ -1,7 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Framework Include="..\src\DillPickle.Framework\DillPickle.Framework.csproj" />
-    <Runner Include="..\src\DillPickle.CommandLineRunner\DillPickle.CommandLineRunner.csproj" />
     <GoCommando Include="..\lib\GoCommando\GoCommando.dll" />
   </ItemGroup>
 
@@ -13,21 +12,13 @@
     <zip>$(ToolsFolder)\7zip\7za.exe</zip>
   </PropertyGroup>
 
-  <Target Name="build" DependsOnTargets="cleanBinaries;deleteBuildDestination;buildProjects;mergeBinaries" />
+  <Target Name="build" DependsOnTargets="deleteBuildDestination;buildProjects;mergeBinaries" />
 
   <Target Name="buildProjects">
     <Message Text="Building projects in Release configuration"/>
     <MSBuild Projects="@(Framework)" Targets="build" StopOnFirstFailure="true" Properties="Configuration=Release">
       <Output TaskParameter="TargetOutputs" ItemName="FrameworkOutput" />
     </MSBuild>
-    <MSBuild Projects="@(Runner)" Targets="build" StopOnFirstFailure="true" Properties="Configuration=Release">
-      <Output TaskParameter="TargetOutputs" ItemName="RunnerOutput" />
-    </MSBuild>
-  </Target>
-
-  <Target Name="cleanBinaries">
-    <Message Text="Cleaning binaries from previous build"/>
-    <MSBuild Projects="@(ProjectReferences)" Targets="clean" StopOnFirstFailure="true" Properties="Configuration=Release" />
   </Target>
 
   <Target Name="deleteBuildDestination">
@@ -38,7 +29,7 @@
   <Target Name="mergeBinaries">
     <Message Text="Merging binaries"/>
     <MakeDir Directories="$(BuildDestination)"/>
-    <Exec Command="$(IlMerge) /attr:@(RunnerOutput) /out:$(BuildDestination)\dill.exe @(RunnerOutput) @(FrameworkOutput) @(GoCommando) /internalize:$(ScriptsFolder)\excluded_from_internalization.txt" />
+    <Exec Command="$(IlMerge) /out:$(BuildDestination)\dill.exe @(FrameworkOutput) @(GoCommando) /internalize:$(ScriptsFolder)\excluded_from_internalization.txt" />
     <!--<Copy SourceFiles="" DestinationFolder="" />-->
     <Exec Command="$(zip) a $(BuildDestination)\dill.zip $(BuildDestination)\*.* -tZip -mx=9" />
   </Target>
