@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("DillPickle.Framework")]
+[assembly: AssemblyTitle("dill")]
 [assembly: AssemblyDescription(@"DillPickle is a simple BDD framework that understands the Gherkin feature syntax.
 
 mookid8000@gmail.com
@@ -39,5 +39,5 @@ http://mookid.dk/oncode"
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("0.8.0.1")]
+[assembly: AssemblyFileVersion("0.8.0.1")]

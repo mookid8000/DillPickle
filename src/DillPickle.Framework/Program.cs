@@ -1,6 +1,9 @@
 ﻿using System;
+using DillPickle.Framework.Infrastructure;
 using DillPickle.Framework.Io;
+using DillPickle.Framework.Io.Api;
 using DillPickle.Framework.Parser;
+using DillPickle.Framework.Parser.Api;
 using DillPickle.Framework.Runner;
 using DillPickle.Framework.Runner.Api;
 using GoCommando;
@@ -19,7 +22,7 @@ Dill-flavored Gherkin-goodness for your BDD needs
 
 Check out http://mookid.dk/oncode/dillpickle for more information.
 ")]
-    public class Program : ICommando
+    class Program : ICommando
     {
         [PositionalArgument]
         [Description("Path to the assembly containing classes with [ActionSteps] and [TypeConverter]s")]
@@ -49,19 +52,21 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
 
         public void Run()
         {
-            // di ftw, oh my!
-            var objectActivator = new TrivialObjectActivator();
-            var fallbackPropertySetter = new TrivialPropertySetter();
-            var propertySetter = new IntelligentPropertySetter(fallbackPropertySetter, objectActivator);
-            var assemblyLoader = new AssemblyLoader();
-            var actionStepsFinder = new ActionStepsFinder(assemblyLoader);
-            var featureRunner = new FeatureRunner(objectActivator, propertySetter);
-            var featureFileFinder = new FeatureFileFinder();
-            var gherkinParser = new StupidGherkinParser();
-            var fileReader = new FileReader();
+            var container = new MiniContainer();
 
-            var runner = new DefaultCommandLineRunner(actionStepsFinder, featureRunner, featureFileFinder, gherkinParser, fileReader);
-            
+            container
+                .MapType<IActionStepsFinder, ActionStepsFinder>()
+                .MapType<IAssemblyLoader, AssemblyLoader>()
+                .MapType<IFeatureRunner, FeatureRunner>()
+                .MapType<IGherkinParser, StupidGherkinParser>()
+                .MapType<IObjectActivator, TrivialObjectActivator>()
+                .MapType<IPropertySetter, IntelligentPropertySetter>()
+                .MapType<IPropertySetter, TrivialPropertySetter>()
+                .MapType<IFeatureFileFinder, FeatureFileFinder>()
+                .MapType<IFileReader, FileReader>();
+
+            var runner = container.Resolve<DefaultCommandLineRunner>();
+
             runner.Execute(new CommandLineArguments
                                {
                                    AssemblyPath = AssemblyPath,

@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FixtureBase.cs" />
+    <Compile Include="Infrastructure\TestMiniContainer.cs" />
     <Compile Include="Integration\TestErrorScenario01.cs" />
     <Compile Include="Runner\TestAssemblyLoader.cs" />
     <Compile Include="Runner\TestDefaultCommandLineRunner.cs" />
