@@ -5,7 +5,7 @@ using DillPickle.Framework.Runner.Api;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-namespace DillPickle.Tests
+namespace DillPickle.Tests.Runner
 {
     [TestFixture]
     public class TestIntelligentPropertySetter : FixtureBase

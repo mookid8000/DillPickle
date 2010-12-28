@@ -66,10 +66,10 @@
     <Compile Include="Runner\TestFeatureRunner.cs" />
     <Compile Include="Executor\TestActionStepFinder.cs" />
     <Compile Include="Parser\TestGherkinParser.cs" />
+    <Compile Include="Runner\TestIntelligentPropertySetter.cs" />
     <Compile Include="Runner\TestTagFilter.cs" />
     <Compile Include="Runner\TestTrivialObjectActivator.cs" />
     <Compile Include="Runner\TestTrivialPropertySetter.cs" />
-    <Compile Include="TestIntelligentPropertySetter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Matcher\TestStepMatcher.cs" />
   </ItemGroup>
