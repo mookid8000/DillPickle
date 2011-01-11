@@ -65,6 +65,8 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
                 .MapType<IFeatureFileFinder, FeatureFileFinder>()
                 .MapType<IFileReader, FileReader>();
 
+            container.Configure<IntelligentPropertySetter>(s => s.AddAssembly(container.Resolve<IAssemblyLoader>().LoadAssembly(AssemblyPath)));
+
             var runner = container.Resolve<DefaultCommandLineRunner>();
 
             runner.Execute(new CommandLineArguments

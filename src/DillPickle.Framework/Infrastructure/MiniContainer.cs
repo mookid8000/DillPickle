@@ -6,7 +6,22 @@ namespace DillPickle.Framework.Infrastructure
 {
     public class MiniContainer
     {
-        readonly Dictionary<Type, List<Type>> typeMappings = new Dictionary<Type, List<Type>>();
+        readonly Dictionary<Type, List<Component>> typeMappings = new Dictionary<Type, List<Component>>();
+        readonly Dictionary<Type, Component> components = new Dictionary<Type, Component>();
+
+        class Component
+        {
+            public Component(Type implementationType, Type serviceType)
+            {
+                ImplementationType = implementationType;
+                ServiceType = serviceType;
+                CommisionActions = new List<Delegate>();
+            }
+
+            public Type ServiceType { get; private set; }
+            public Type ImplementationType { get; private set; }
+            public List<Delegate> CommisionActions { get; private set; }
+        }
 
         public T Resolve<T>()
         {
@@ -28,13 +43,24 @@ namespace DillPickle.Framework.Infrastructure
                                   serviceType));
             }
 
-            var list = typeMappings.ContainsKey(serviceType)
-                           ? typeMappings[serviceType]
-                           : (typeMappings[serviceType] = new List<Type>());
+            var component = new Component(implementationType, serviceType);
 
-            list.Add(implementationType);
+            AddComponent(component);
 
             return this;
+        }
+
+        void AddComponent(Component component)
+        {
+            var serviceType = component.ServiceType;
+            var implementationType = component.ImplementationType;
+
+            var list = typeMappings.ContainsKey(serviceType)
+                           ? typeMappings[serviceType]
+                           : (typeMappings[serviceType] = new List<Component>());
+
+            list.Add(component);
+            components[implementationType] = component;
         }
 
         object Create(Type serviceTypeToCreate, ResolutionContext context)
@@ -43,15 +69,38 @@ namespace DillPickle.Framework.Infrastructure
 
             using (context.EnterResolutionContextOf(concreteTypeToCreate))
             {
-                var parameters = concreteTypeToCreate
-                    .GetConstructors().First()
+                var constructors = concreteTypeToCreate
+                    .GetConstructors().FirstOrDefault();
+
+                if (constructors == null)
+                {
+                    throw new InvalidOperationException(string.Format("Could not find valid constructor on {0}.", concreteTypeToCreate));
+                }
+
+                var parameters = constructors
                     .GetParameters()
                     .Select(p => Create(p.ParameterType, context))
                     .ToArray();
 
                 var instance = Activator.CreateInstance(concreteTypeToCreate, parameters);
 
+                PerformCommissionTasks(instance);
+
                 return instance;
+            }
+        }
+
+        void PerformCommissionTasks(object instance)
+        {
+            var type = instance.GetType();
+
+            if (!components.ContainsKey(type)) return;
+
+            var component = components[type];
+
+            foreach(var deli in component.CommisionActions)
+            {
+                deli.Method.Invoke(deli.Target, new[] {instance});
             }
         }
 
@@ -63,6 +112,7 @@ namespace DillPickle.Framework.Infrastructure
 
                 return availableTypes
                     .SkipWhile(context.CurrentlyResolving)
+                    .Select(c => c.ImplementationType)
                     .First();
             }
 
@@ -89,9 +139,9 @@ namespace DillPickle.Framework.Infrastructure
                 return new DisposableTypeResolutionContext(this, type);
             }
 
-            public bool CurrentlyResolving(Type type)
+            public bool CurrentlyResolving(Component component)
             {
-                return resolving.Contains(type);
+                return resolving.Contains(component.ImplementationType);
             }
 
             class DisposableTypeResolutionContext : IDisposable
@@ -112,6 +162,20 @@ namespace DillPickle.Framework.Infrastructure
                     disposed = true;
                 }
             }
+        }
+
+        public MiniContainer Configure<T>(Action<T> doConfigure)
+        {
+            var concreteType = typeof(T);
+
+            if (!components.ContainsKey(concreteType))
+                throw new InvalidOperationException(string.Format("Could not set up configuration for {0} - it does not seem to have been mapped.", concreteType));
+
+            var component = components[concreteType];
+
+            component.CommisionActions.Add(doConfigure);
+
+            return this;
         }
     }
 }

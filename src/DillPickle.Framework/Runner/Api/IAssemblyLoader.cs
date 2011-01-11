@@ -5,5 +5,6 @@ namespace DillPickle.Framework.Runner.Api
     public interface IAssemblyLoader
     {
         Assembly LoadAssemblyWithApplicationConfigurationIfPossible(string assemblyPath);
+        Assembly LoadAssembly(string assemblyPath);
     }
 }

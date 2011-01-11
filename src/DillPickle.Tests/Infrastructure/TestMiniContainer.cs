@@ -157,6 +157,81 @@ namespace DillPickle.Tests.Infrastructure
             public interface INotConcrete {}
             public abstract class NotConcrete {}
         }
+
+        [Test]
+        public void CanConfigureParticularObjectIfNecessary()
+        {
+            container.MapType<Scenario05.IDep, Scenario05.Impl>()
+                .MapType<Scenario05.IAnotherDep, Scenario05.AnotherImpl>();
+
+            container.Configure<Scenario05.Impl>(i => i.StringProperty = "yo!")
+                .Configure<Scenario05.AnotherImpl>(i => i.Initialize());
+
+            var root = container.Resolve<Scenario05.Root>();
+
+            var strings = root.GetStrings();
+            Assert.AreEqual("StringProperty: yo!, another string: initialized!", strings);
+        }
+
+        class Scenario05
+        {
+            public class Root
+            {
+                readonly IDep dep;
+
+                public Root(IDep dep)
+                {
+                    this.dep = dep;
+                }
+
+                public string GetStrings()
+                {
+                    return dep.GetStrings();
+                }
+            }
+
+            public interface IDep
+            {
+                string GetStrings();
+            }
+
+            public interface IAnotherDep
+            {
+                string GetStrings();
+            }
+
+            public class Impl : IDep
+            {
+                readonly IAnotherDep anotherDep;
+
+                public Impl(IAnotherDep anotherDep)
+                {
+                    this.anotherDep = anotherDep;
+                }
+
+                public string StringProperty { get; set; }
+                
+                public string GetStrings()
+                {
+                    return string.Format("StringProperty: {0}, another string: {1}", StringProperty, anotherDep.GetStrings());
+                }
+            }
+
+            public class AnotherImpl : IAnotherDep
+            {
+                string text;
+
+                public void Initialize()
+                {
+                    text = "initialized!";
+                }
+
+                public string GetStrings()
+                {
+                    return text;
+                }
+            }
+        }
     }
 
 }

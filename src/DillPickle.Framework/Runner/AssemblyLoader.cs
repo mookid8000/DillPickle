@@ -10,9 +10,8 @@ namespace DillPickle.Framework.Runner
         public Assembly LoadAssemblyWithApplicationConfigurationIfPossible(string assemblyPath)
         {
             var absoluteAssemblyPath = GenerateAbsolutePath(assemblyPath);
-            AssertFileExists(absoluteAssemblyPath, "Assembly {0} does not exist", assemblyPath);
 
-            var assembly = Assembly.LoadFrom(absoluteAssemblyPath);
+            var assembly = LoadAssembly(assemblyPath);
 
             var configPath = string.Format("{0}.config", absoluteAssemblyPath);
 
@@ -22,6 +21,15 @@ namespace DillPickle.Framework.Runner
             }
 
             return assembly;
+        }
+
+        public Assembly LoadAssembly(string assemblyPath)
+        {
+            var absoluteAssemblyPath = GenerateAbsolutePath(assemblyPath);
+            
+            AssertFileExists(absoluteAssemblyPath, "Assembly {0} does not exist", assemblyPath);
+
+            return Assembly.LoadFrom(absoluteAssemblyPath);
         }
 
         string GenerateAbsolutePath(string path)

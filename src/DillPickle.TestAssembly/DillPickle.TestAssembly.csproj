@@ -49,14 +49,24 @@
     <Compile Include="CalculatorActionSteps.cs" />
     <Compile Include="OneActionStepsClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ThirdActionStepsClass.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Features\01_Pickles_should_work.feature" />
+    <None Include="Features\01_Pickles_should_work.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Features\02_Pickles_should_work.feature" />
-    <None Include="Features\03_Pickles_should_work.feature" />
+    <None Include="Features\02_Pickles_should_work.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Features\03_Pickles_should_work.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Features\04_Pickles_should_work.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DillPickle.Framework\DillPickle.Framework.csproj">

@@ -9,8 +9,8 @@ namespace DillPickle.Framework.Runner
 {
     public class IntelligentPropertySetter : IPropertySetter
     {
-        readonly IPropertySetter fallbackPropertySetter;
         readonly HashSet<Assembly> assemblies = new HashSet<Assembly>();
+        readonly IPropertySetter fallbackPropertySetter;
         readonly IObjectActivator objectActivator;
 
         public IntelligentPropertySetter(IPropertySetter fallbackPropertySetter, IObjectActivator objectActivator)
@@ -31,9 +31,7 @@ namespace DillPickle.Framework.Runner
                 .Select(t => new
                                  {
                                      Type = t,
-                                     Attribute = t.GetCustomAttributes(typeof (TypeConverterAttribute), false)
-                                 .Cast<TypeConverterAttribute>()
-                                 .SingleOrDefault()
+                                     Attribute = GetTypeConverterAttributeOrNull(t)
                                  })
                 .Where(t => t.Attribute != null && IsTheRightConverter(t.Type, targetType))
                 .FirstOrDefault();
@@ -61,6 +59,13 @@ namespace DillPickle.Framework.Runner
             {
                 fallbackPropertySetter.SetValue(instance, property, value);
             }
+        }
+
+        TypeConverterAttribute GetTypeConverterAttributeOrNull(Type t)
+        {
+            return t.GetCustomAttributes(typeof (TypeConverterAttribute), false)
+                .Cast<TypeConverterAttribute>()
+                .SingleOrDefault();
         }
 
         bool IsTheRightConverter(Type type, Type targetType)
