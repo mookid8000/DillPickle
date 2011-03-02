@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Text;
-using DillPickle.Framework.Extensions;
 using DillPickle.Framework.Io.Api;
 using DillPickle.Framework.Listeners;
 using DillPickle.Framework.Parser.Api;
@@ -47,8 +46,19 @@ namespace DillPickle.Framework.Runner
 
             var actionStepsTypes = actionStepsFinder.FindTypesWithActionSteps(assemblyPath);
 
-            var options = new RunnerOptions {Filter = filter, DruRun = arguments.DruRun};
-            featuresToRun.ForEach(f => featureRunner.Run(f, actionStepsTypes, options));
+            var options = new RunnerOptions
+                              {
+                                  Filter = filter,
+                                  DruRun = arguments.DruRun,
+                                  StopOnError = arguments.StopOnError,
+                              };
+
+            foreach(var feature in featuresToRun)
+            {
+                var featureResult = featureRunner.Run(feature, actionStepsTypes, options);
+
+                if (options.StopOnError && featureResult.Result == Result.Failed) break;
+            }
         }
     }
 }

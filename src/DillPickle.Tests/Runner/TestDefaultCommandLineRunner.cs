@@ -7,7 +7,6 @@ using DillPickle.Framework.Runner;
 using DillPickle.Framework.Runner.Api;
 using NUnit.Framework;
 using Rhino.Mocks;
-using Shouldly;
 
 namespace DillPickle.Tests.Runner
 {
@@ -48,7 +47,7 @@ namespace DillPickle.Tests.Runner
                                 AssemblyPath = "some path",
                                 FeaturePattern = "weird pattern",
                                 TagsToExclude = new[] {"bim"},
-                                TagsToInclude = new[] {"bom"}
+                                TagsToInclude = new[] {"bom"},
                             });
 
             var expectedOptions = new RunnerOptions
@@ -60,6 +59,47 @@ namespace DillPickle.Tests.Runner
             featureRunner.AssertWasCalled(r => r.Run(feature1, actionStepsTypes, expectedOptions));
             featureRunner.AssertWasCalled(r => r.Run(feature2, actionStepsTypes, expectedOptions));
             featureRunner.AssertWasNotCalled(r => r.Run(feature3, actionStepsTypes, expectedOptions));
+        }
+
+        [Test]
+        public void StopsExecutingIfErrorIsEncountered()
+        {
+            featureFileFinder.Stub(f => f.Find(Arg<string>.Is.Anything)).Return(new[] { "file1", "file2" });
+            actionStepsFinder.Stub(a => a.FindTypesWithActionSteps(Arg<string>.Is.Anything)).Return(new Type[0]);
+
+            var feature1 = Stub("file1", "bla1", "feature1", new[] { "bom" });
+            var feature2 = Stub("file2", "bla2", "feature2", new[] { "bom" });
+
+            var expectedOptions = new RunnerOptions
+                                      {
+                                          Filter = TagFilter.Empty(),
+                                          DruRun = false,
+                                          StopOnError = true,
+                                      };
+
+            featureRunner.Stub(r => r.Run(feature1, new Type[0], expectedOptions))
+                .Return(new FeatureResult(feature1)
+                            {
+                                ScenarioResults =
+                                    {
+                                        new ScenarioResult("has an error")
+                                            {
+                                                StepResults = {new StepResult("is an error") {Result = Result.Failed}}
+                                            }
+                                    }
+                            });
+
+            sut.Execute(new CommandLineArguments
+                            {
+                                AssemblyPath = "some path",
+                                FeaturePattern = "weird pattern",
+                                TagsToExclude = new string[0],
+                                TagsToInclude = new string[0],
+                                StopOnError = true,
+                            });
+
+            featureRunner.AssertWasCalled(r => r.Run(feature1, new Type[0], expectedOptions));
+            featureRunner.AssertWasNotCalled(r => r.Run(feature2, new Type[0], expectedOptions));
         }
 
         Feature Stub(string fileName, string gherkinText, string featureName, string[] featureTags)

@@ -6,8 +6,11 @@ namespace DillPickle.Framework.Runner
         {
             Filter = TagFilter.Empty();
         }
+
         public TagFilter Filter { get; set; }
         public bool DruRun { get; set; }
+
+        public bool StopOnError { get; set; }
 
         public bool Equals(RunnerOptions other)
         {

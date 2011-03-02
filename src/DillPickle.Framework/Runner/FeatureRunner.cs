@@ -51,6 +51,8 @@ namespace DillPickle.Framework.Runner
                     var result = ExecuteScenario(scenario, feature, matches, executionObjects, options);
                     featureResult.AddScenarioResult(result);
                     AfterScenario(feature, scenario, result, executionObjects);
+
+                    if (options.StopOnError && result.Result == Result.Failed) break;
                 }
 
                 AfterFeature(feature, featureResult, executionObjects);
@@ -118,6 +120,8 @@ namespace DillPickle.Framework.Runner
                 var result = ExecuteStep(step, matches, executionObjects, options);
                 scenarioResult.AddStepResult(result);
                 AfterStep(scenario, feature, step, result, executionObjects);
+
+                if (options.StopOnError && result.Result == Result.Failed) break;
             }
 
             return scenarioResult;
