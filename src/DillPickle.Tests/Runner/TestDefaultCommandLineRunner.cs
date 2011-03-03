@@ -74,7 +74,7 @@ namespace DillPickle.Tests.Runner
                                       {
                                           Filter = TagFilter.Empty(),
                                           DruRun = false,
-                                          StopOnError = true,
+                                          SuccessRequired = true,
                                       };
 
             featureRunner.Stub(r => r.Run(feature1, new Type[0], expectedOptions))
@@ -95,7 +95,48 @@ namespace DillPickle.Tests.Runner
                                 FeaturePattern = "weird pattern",
                                 TagsToExclude = new string[0],
                                 TagsToInclude = new string[0],
-                                StopOnError = true,
+                                SuccessRequired = true,
+                            });
+
+            featureRunner.AssertWasCalled(r => r.Run(feature1, new Type[0], expectedOptions));
+            featureRunner.AssertWasNotCalled(r => r.Run(feature2, new Type[0], expectedOptions));
+        }
+
+        [Test]
+        public void StopsExecutingIfPendingIsEncountered()
+        {
+            featureFileFinder.Stub(f => f.Find(Arg<string>.Is.Anything)).Return(new[] { "file1", "file2" });
+            actionStepsFinder.Stub(a => a.FindTypesWithActionSteps(Arg<string>.Is.Anything)).Return(new Type[0]);
+
+            var feature1 = Stub("file1", "bla1", "feature1", new[] { "bom" });
+            var feature2 = Stub("file2", "bla2", "feature2", new[] { "bom" });
+
+            var expectedOptions = new RunnerOptions
+                                      {
+                                          Filter = TagFilter.Empty(),
+                                          DruRun = false,
+                                          SuccessRequired = true,
+                                      };
+
+            featureRunner.Stub(r => r.Run(feature1, new Type[0], expectedOptions))
+                .Return(new FeatureResult(feature1)
+                            {
+                                ScenarioResults =
+                                    {
+                                        new ScenarioResult("has an error")
+                                            {
+                                                StepResults = {new StepResult("is an error") {Result = Result.Pending}}
+                                            }
+                                    }
+                            });
+
+            sut.Execute(new CommandLineArguments
+                            {
+                                AssemblyPath = "some path",
+                                FeaturePattern = "weird pattern",
+                                TagsToExclude = new string[0],
+                                TagsToInclude = new string[0],
+                                SuccessRequired = true,
                             });
 
             featureRunner.AssertWasCalled(r => r.Run(feature1, new Type[0], expectedOptions));

@@ -29,6 +29,11 @@ namespace DillPickle.Framework.Runner.Api
             }
         }
 
+        public bool Success
+        {
+            get { return Result == Result.Success; }
+        }
+
         public void AddStepResult(StepResult result)
         {
             StepResults.Add(result);

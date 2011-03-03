@@ -50,14 +50,14 @@ namespace DillPickle.Framework.Runner
                               {
                                   Filter = filter,
                                   DruRun = arguments.DruRun,
-                                  StopOnError = arguments.StopOnError,
+                                  SuccessRequired = arguments.SuccessRequired,
                               };
 
             foreach(var feature in featuresToRun)
             {
                 var featureResult = featureRunner.Run(feature, actionStepsTypes, options);
 
-                if (options.StopOnError && featureResult.Result == Result.Failed) break;
+                if (options.SuccessRequired && !featureResult.Success) break;
             }
         }
     }

@@ -43,7 +43,33 @@ namespace DillPickle.Tests.Runner
                                       }
                               };
 
-            runner.Run(feature, new[] {typeof (RemembersStepsExecuted)}, new RunnerOptions {StopOnError = true});
+            runner.Run(feature, new[] {typeof (RemembersStepsExecuted)}, new RunnerOptions {SuccessRequired = true});
+
+            Assert.IsFalse(RemembersStepsExecuted.StepNames.Contains("step3"));
+        }
+
+        [Test]
+        public void StopsExecutingScenarioIfStepIsPendingAndStopOnErrorIsSet()
+        {
+            RemembersStepsExecuted.Reset();
+
+            var feature = new Feature("has an error", NoTags())
+                              {
+                                  Scenarios =
+                                      {
+                                          new ExecutableScenario("has an error", NoTags())
+                                              {
+                                                  Steps=
+                                                      {
+                                                          Step.Given("step1"),
+                                                          Step.Given("step2 does not exist"),
+                                                          Step.Given("step3"),
+                                                      }
+                                              }
+                                      }
+                              };
+
+            runner.Run(feature, new[] {typeof (RemembersStepsExecuted)}, new RunnerOptions {SuccessRequired = true});
 
             Assert.IsFalse(RemembersStepsExecuted.StepNames.Contains("step3"));
         }
@@ -69,7 +95,7 @@ namespace DillPickle.Tests.Runner
                                       }
                               };
 
-            runner.Run(feature, new[] {typeof (RemembersStepsExecuted)}, new RunnerOptions {StopOnError = false});
+            runner.Run(feature, new[] {typeof (RemembersStepsExecuted)}, new RunnerOptions {SuccessRequired = false});
 
             Assert.IsTrue(RemembersStepsExecuted.StepNames.Contains("step3"));
         }

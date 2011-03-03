@@ -31,6 +31,11 @@ namespace DillPickle.Framework.Runner.Api
             }
         }
 
+        public bool Success
+        {
+            get { return Result == Result.Success; }
+        }
+
         public void AddScenarioResult(ScenarioResult result)
         {
             ScenarioResults.Add(result);

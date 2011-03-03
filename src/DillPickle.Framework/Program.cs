@@ -37,9 +37,9 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
         [NamedArgument("dryrun", "d")]
         public bool DryRun { get; set; }
 
-        [NamedArgument("stop", "s")]
-        [Description("Specifies that the runner should stop executing if an error is encountered")]
-        public bool StopOnError { get; set; }
+        [NamedArgument("success", "s")]
+        [Description("Specifies that the runner should stop executing if a step execution results in anything but success")]
+        public bool SuccessRequired { get; set; }
 
         [NamedArgument("include", "i")]
         [Description("Specifies which tags to include")]
@@ -80,7 +80,7 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
                                    TagsToInclude = Split(Include),
                                    TagsToExclude = Split(Exclude),
                                    DruRun = DryRun,
-                                   StopOnError = StopOnError,
+                                   SuccessRequired = SuccessRequired,
                                });
         }
 

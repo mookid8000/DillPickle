@@ -33,6 +33,6 @@ namespace DillPickle.Framework.Runner.Api
         /// <summary>
         /// Indicates whether the runner should stop execution upon encountering an error
         /// </summary>
-        public bool StopOnError { get; set; }
+        public bool SuccessRequired { get; set; }
     }
 }
