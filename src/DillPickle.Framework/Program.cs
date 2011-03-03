@@ -22,7 +22,7 @@ Dill-flavored Gherkin-goodness for your BDD needs
 
 Check out http://mookid.dk/oncode/dillpickle for more information.
 ")]
-    class Program : ICommando
+    public class Program : ICommando
     {
         [PositionalArgument]
         [Description("Path to the assembly containing classes with [ActionSteps] and [TypeConverter]s")]

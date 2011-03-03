@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GoCommando, Version=0.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\gocommando\GoCommando.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.5.3.9345, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\nunit\nunit.framework.dll</HintPath>
@@ -61,6 +65,7 @@
     <Compile Include="FixtureBase.cs" />
     <Compile Include="Infrastructure\TestMiniContainer.cs" />
     <Compile Include="Integration\TestErrorScenario01.cs" />
+    <Compile Include="Integration\TestErrorScenario02.cs" />
     <Compile Include="Runner\TestAssemblyLoader.cs" />
     <Compile Include="Runner\TestDefaultCommandLineRunner.cs" />
     <Compile Include="Runner\TestFeatureFileFinder.cs" />
