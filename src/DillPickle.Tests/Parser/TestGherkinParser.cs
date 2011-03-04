@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DillPickle.Framework.Exceptions;
 using DillPickle.Framework.Parser.Api;
@@ -15,6 +16,51 @@ namespace DillPickle.Tests.Parser
         public override void DoSetUp()
         {
             parser = new StupidGherkinParser();
+        }
+
+        [Test]
+        public void CanParseTwoTablesInARow()
+        {
+            var result =
+                parser.Parse(
+                    @"
+Story: Distribution with energy constraints
+	Verifies that the energy constraints are taken into account when distributing.
+
+	Background:
+		Given that the test site exists
+
+	Scenario: Test Scenario
+		Given the following analog local units:
+			| Alias			| TechMin	| TechMax	| ForecastMin	| ForecastMax	| EstMaxCap	| ObsMin	| ObsMax	| ProdOrConsCost	| Efficiency	|
+			| REG_T1_001	| 9 kW		| 12 kW		| 0 kW			| 12 kW			| 2 kWh		| 0 m		| 2 m		| 10				| 1				|
+			| REG_T1_002	| 9 kW		| 12 kW		| 0 kW			| 12 kW			| 2 kWh		| 0 m		| 2 m		| 100				| 1				|
+
+		and the following signals:
+			| Tag				| Value	|
+			| REG_T1_001.CurObs	| 2		|
+			| REG_T1_002.CurObs	| 2		|");
+
+            var features = result.Features;
+            Assert.AreEqual(1, features.Count);
+            var scenarios = features[0].Scenarios;
+            Assert.AreEqual(1, scenarios.Count);
+            var scenario = scenarios[0].GetExecutableScenarios().Single();
+            var steps = scenario.Steps;
+            Assert.AreEqual(2, steps.Count);
+
+            var expectedColumnNamesFirstTable = new[]{"Alias", "TechMin", "TechMax", "ForecastMin", "ForecastMax", "EstMaxCap", "ObsMin", "ObsMax", "ProdOrConsCost", "Efficiency"};
+            var actualColumnNamesFirstTable = steps[0].Parameters.First().Keys;
+            AssertNames(expectedColumnNamesFirstTable, actualColumnNamesFirstTable);
+
+            var expectedColumnNamesSecondTable = new[]{"Tag", "Value"};
+            var actualColumnNamesSecondTable = steps[1].Parameters.First().Keys;
+            AssertNames(expectedColumnNamesSecondTable, actualColumnNamesSecondTable);
+        }
+
+        private void AssertNames(IEnumerable<string> expected, IEnumerable<string> actual)
+        {
+            Assert.AreEqual(expected.OrderBy(e => e).ToArray(), actual.OrderBy(e => e).ToArray());
         }
 
         [Test]

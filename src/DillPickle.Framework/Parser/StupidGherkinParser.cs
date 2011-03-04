@@ -216,6 +216,7 @@ namespace DillPickle.Framework.Parser
 
                             currentScenario.Steps.Add(Step.And(line.Substring("and".Length).Trim(),
                                                                mostRecentStepType.Value));
+                            tableColumnNames.Clear();
                         }
                         else if (line.StartsWith("given", Comparison))
                         {
