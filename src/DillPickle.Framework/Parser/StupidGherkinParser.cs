@@ -59,7 +59,7 @@ namespace DillPickle.Framework.Parser
                     line = line.Trim();
                     lineNumber++;
 
-                    if (string.IsNullOrEmpty(line))
+                    if (ShouldBeIgnored(line))
                     {
                         continue;
                     }
@@ -283,6 +283,11 @@ namespace DillPickle.Framework.Parser
             features.ForEach(feature => AssertConsistency(feature, fileName));
 
             return new ParseResult(features);
+        }
+
+        private bool ShouldBeIgnored(string line)
+        {
+            return string.IsNullOrEmpty(line) || line.StartsWith("#");
         }
 
         void AssertConsistency(Feature feature, string fileName)
