@@ -10,5 +10,10 @@ namespace DillPickle.Framework.Runner.Api
         public string Text { get; private set; }
         public Result Result { get; set; }
         public string ErrorMessage { get; set; }
+
+        public bool Success
+        {
+            get { return Result == Result.Success; }
+        }
     }
 }

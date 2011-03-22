@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using DillPickle.Framework.Parser.Api;
 using DillPickle.Framework.Runner.Api;
 using NUnit.Framework;
@@ -19,6 +20,114 @@ namespace DillPickle.Tests.Runner
             runner = new FeatureRunner(new TrivialObjectActivator(), new TrivialPropertySetter());
 
             ClassWithActionSteps.Reset();
+        }
+
+        [Test]
+        public void StopsExecutingScenarioIfStepFailsAndStopOnErrorIsSet()
+        {
+            RemembersStepsExecuted.Reset();
+
+            var feature = new Feature("has an error", NoTags())
+                              {
+                                  Scenarios =
+                                      {
+                                          new ExecutableScenario("has an error", NoTags())
+                                              {
+                                                  Steps=
+                                                      {
+                                                          Step.Given("step1"),
+                                                          Step.Given("step2"),
+                                                          Step.Given("step3"),
+                                                      }
+                                              }
+                                      }
+                              };
+
+            runner.Run(feature, new[] {typeof (RemembersStepsExecuted)}, new RunnerOptions {SuccessRequired = true});
+
+            Assert.IsFalse(RemembersStepsExecuted.StepNames.Contains("step3"));
+        }
+
+        [Test]
+        public void StopsExecutingScenarioIfStepIsPendingAndStopOnErrorIsSet()
+        {
+            RemembersStepsExecuted.Reset();
+
+            var feature = new Feature("has an error", NoTags())
+                              {
+                                  Scenarios =
+                                      {
+                                          new ExecutableScenario("has an error", NoTags())
+                                              {
+                                                  Steps=
+                                                      {
+                                                          Step.Given("step1"),
+                                                          Step.Given("step2 does not exist"),
+                                                          Step.Given("step3"),
+                                                      }
+                                              }
+                                      }
+                              };
+
+            runner.Run(feature, new[] {typeof (RemembersStepsExecuted)}, new RunnerOptions {SuccessRequired = true});
+
+            Assert.IsFalse(RemembersStepsExecuted.StepNames.Contains("step3"));
+        }
+
+        [Test]
+        public void DoesNotStopExecutingScenarioIfStepFailsAndStopOnErrorIsNotSet()
+        {
+            RemembersStepsExecuted.Reset();
+
+            var feature = new Feature("has an error", NoTags())
+                              {
+                                  Scenarios =
+                                      {
+                                          new ExecutableScenario("has an error", NoTags())
+                                              {
+                                                  Steps=
+                                                      {
+                                                          Step.Given("step1"),
+                                                          Step.Given("step2"),
+                                                          Step.Given("step3"),
+                                                      }
+                                              }
+                                      }
+                              };
+
+            runner.Run(feature, new[] {typeof (RemembersStepsExecuted)}, new RunnerOptions {SuccessRequired = false});
+
+            Assert.IsTrue(RemembersStepsExecuted.StepNames.Contains("step3"));
+        }
+
+        [ActionSteps]
+        class RemembersStepsExecuted
+        {
+            public static List<string> StepNames = new List<string>();
+
+            public static void Reset()
+            {
+                StepNames.Clear();
+            }
+
+            [Given("step1")]
+            public void Step1()
+            {
+                StepNames.Add("step1");
+            }
+            
+            [Given("step2")]
+            public void Step2()
+            {
+                StepNames.Add("step2");
+                throw new CryptographicUnexpectedOperationException("as if");
+            }
+            
+            [Given("step3")]
+            public void Step3()
+            {
+                StepNames.Add("step3");
+            }
         }
 
         [Test]
@@ -47,7 +156,7 @@ namespace DillPickle.Tests.Runner
             Assert.IsTrue(JustRemembersIfItHasBeenRun.ShouldNotRunWasGood);
         }
 
-        private RunnerOptions OptionsWithTag()
+        RunnerOptions OptionsWithTag()
         {
             return new RunnerOptions
                        {

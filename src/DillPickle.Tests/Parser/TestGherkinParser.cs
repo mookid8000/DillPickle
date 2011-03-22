@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DillPickle.Framework.Exceptions;
 using DillPickle.Framework.Parser.Api;
@@ -15,6 +16,95 @@ namespace DillPickle.Tests.Parser
         public override void DoSetUp()
         {
             parser = new StupidGherkinParser();
+        }
+
+        [Test]
+        public void IgnoresCommentsAnywhereTheyAreEncountered()
+        {
+            var result = parser.Parse(@"
+# comment outside of anything
+
+Feature: Distribution with energy constraints
+    # comment in the story text
+	Verifies that the energy constraints are taken into account when distributing.
+    # comment in the story text
+
+	Background:
+        # comment in background
+		Given that the test site exists
+
+	Scenario: Test Scenario
+        # comment in scenario
+		Given the following analog local units:
+			| Alias			| TechMin	| TechMax	| ForecastMin	| ForecastMax	| EstMaxCap	| ObsMin	| ObsMax	| ProdOrConsCost	| Efficiency	|
+			| REG_T1_001	| 9 kW		| 12 kW		| 0 kW			| 12 kW			| 2 kWh		| 0 m		| 2 m		| 10				| 1				|
+			| REG_T1_002	| 9 kW		| 12 kW		| 0 kW			| 12 kW			| 2 kWh		| 0 m		| 2 m		| 100				| 1				|
+        # comment in scenario
+        # comment in scenario
+        # comment in scenario
+		and the following signals:
+			| Tag				| Value	|
+			| REG_T1_001.CurObs	| 2		|
+			| REG_T1_002.CurObs	| 2		|");
+
+            var features = result.Features;
+            Assert.AreEqual(1, features.Count);
+            var feature = features[0];
+            Assert.AreEqual("Distribution with energy constraints", feature.Headline);
+            Assert.AreEqual("Verifies that the energy constraints are taken into account when distributing.\r\n", feature.Description);
+            var scenarios = feature.Scenarios;
+            Assert.AreEqual(1, scenarios.Count);
+            var scenario = scenarios[0];
+            Assert.AreEqual("Test Scenario", scenario.Headline);
+            var steps = scenario.Steps;
+            Assert.AreEqual(2, steps.Count);
+            Assert.AreEqual(Step.Given("the following analog local units:").ToString(), steps[0].ToString());
+            Assert.AreEqual(Step.And("the following signals:", StepType.Given).ToString(), steps[1].ToString());
+        }
+
+        [Test]
+        public void CanParseTwoTablesInARow()
+        {
+            var result =
+                parser.Parse(
+                    @"
+Story: Distribution with energy constraints
+	Verifies that the energy constraints are taken into account when distributing.
+
+	Background:
+		Given that the test site exists
+
+	Scenario: Test Scenario
+		Given the following analog local units:
+			| Alias			| TechMin	| TechMax	| ForecastMin	| ForecastMax	| EstMaxCap	| ObsMin	| ObsMax	| ProdOrConsCost	| Efficiency	|
+			| REG_T1_001	| 9 kW		| 12 kW		| 0 kW			| 12 kW			| 2 kWh		| 0 m		| 2 m		| 10				| 1				|
+			| REG_T1_002	| 9 kW		| 12 kW		| 0 kW			| 12 kW			| 2 kWh		| 0 m		| 2 m		| 100				| 1				|
+
+		and the following signals:
+			| Tag				| Value	|
+			| REG_T1_001.CurObs	| 2		|
+			| REG_T1_002.CurObs	| 2		|");
+
+            var features = result.Features;
+            Assert.AreEqual(1, features.Count);
+            var scenarios = features[0].Scenarios;
+            Assert.AreEqual(1, scenarios.Count);
+            var scenario = scenarios[0].GetExecutableScenarios().Single();
+            var steps = scenario.Steps;
+            Assert.AreEqual(2, steps.Count);
+
+            var expectedColumnNamesFirstTable = new[]{"Alias", "TechMin", "TechMax", "ForecastMin", "ForecastMax", "EstMaxCap", "ObsMin", "ObsMax", "ProdOrConsCost", "Efficiency"};
+            var actualColumnNamesFirstTable = steps[0].Parameters.First().Keys;
+            AssertNames(expectedColumnNamesFirstTable, actualColumnNamesFirstTable);
+
+            var expectedColumnNamesSecondTable = new[]{"Tag", "Value"};
+            var actualColumnNamesSecondTable = steps[1].Parameters.First().Keys;
+            AssertNames(expectedColumnNamesSecondTable, actualColumnNamesSecondTable);
+        }
+
+        private void AssertNames(IEnumerable<string> expected, IEnumerable<string> actual)
+        {
+            Assert.AreEqual(expected.OrderBy(e => e).ToArray(), actual.OrderBy(e => e).ToArray());
         }
 
         [Test]

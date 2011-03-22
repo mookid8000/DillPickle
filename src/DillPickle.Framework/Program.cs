@@ -22,7 +22,7 @@ Dill-flavored Gherkin-goodness for your BDD needs
 
 Check out http://mookid.dk/oncode/dillpickle for more information.
 ")]
-    class Program : ICommando
+    public class Program : ICommando
     {
         [PositionalArgument]
         [Description("Path to the assembly containing classes with [ActionSteps] and [TypeConverter]s")]
@@ -36,6 +36,10 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
 
         [NamedArgument("dryrun", "d")]
         public bool DryRun { get; set; }
+
+        [NamedArgument("success", "s")]
+        [Description("Specifies that the runner should stop executing if a step execution results in anything but success")]
+        public bool SuccessRequired { get; set; }
 
         [NamedArgument("include", "i")]
         [Description("Specifies which tags to include")]
@@ -76,6 +80,7 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
                                    TagsToInclude = Split(Include),
                                    TagsToExclude = Split(Exclude),
                                    DruRun = DryRun,
+                                   SuccessRequired = SuccessRequired,
                                });
         }
 

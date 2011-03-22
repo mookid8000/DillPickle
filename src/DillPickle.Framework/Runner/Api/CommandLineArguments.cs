@@ -29,5 +29,10 @@ namespace DillPickle.Framework.Runner.Api
         /// Indicates whether the runner should only simulate running the action steps
         ///</summary>
         public bool DruRun { get; set; }
+
+        /// <summary>
+        /// Indicates whether the runner should stop execution upon encountering an error
+        /// </summary>
+        public bool SuccessRequired { get; set; }
     }
 }
