@@ -128,7 +128,7 @@ namespace DillPickle.Framework.Runner
             var stepResult = new StepResult(step.Text);
 
             var stepToMatch = step;
-            var method = matches.FirstOrDefault(m => m.StepMatch.Step == stepToMatch);
+            var method = matches.SingleOrDefault(m => m.StepMatch.Step.Matches(stepToMatch));
 
             if (method == null)
             {

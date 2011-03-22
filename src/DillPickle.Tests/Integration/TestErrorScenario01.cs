@@ -4,7 +4,6 @@ using System.Linq;
 using DillPickle.Framework.Executor.Attributes;
 using DillPickle.Framework.Parser;
 using DillPickle.Framework.Runner;
-using DillPickle.Framework.Runner.Api;
 using NUnit.Framework;
 
 namespace DillPickle.Tests.Integration

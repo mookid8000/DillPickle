@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DillPickle.Framework.Parser.Api
 {
@@ -75,7 +76,31 @@ namespace DillPickle.Framework.Parser.Api
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(other.Text, Text) && Equals(other.Prefix, Prefix) && Equals(other.StepType, StepType);
+            
+            return Equals(other.Text, Text)
+                && Equals(other.Prefix, Prefix) 
+                && Equals(other.StepType, StepType)
+                && DictionaryListsAreEqual(Parameters, other.Parameters);
+        }
+
+        bool DictionaryListsAreEqual(List<Dictionary<string, string>> list1, List<Dictionary<string, string>> list2)
+        {
+            if (list1.Count != list2.Count) return false;
+
+            foreach (var index in Enumerable.Range(0, list1.Count))
+            {
+                var dict1 = list1[index];
+                var dict2 = list2[index];
+
+                if (dict1.Count != dict2.Count) return false;
+
+                if (dict1.Any(kvp => !dict2.ContainsKey(kvp.Key) || dict2[kvp.Key] != kvp.Value))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public override int GetHashCode()
@@ -97,6 +122,11 @@ namespace DillPickle.Framework.Parser.Api
         public static bool operator !=(Step left, Step right)
         {
             return !Equals(left, right);
+        }
+
+        public bool Matches(Step stepToMatch)
+        {
+            return stepToMatch == this;
         }
     }
 }
