@@ -6,11 +6,11 @@ using NUnit.Framework;
 
 namespace DillPickle.Tests.Integration
 {
-    [TestFixture]
+    [TestFixture, Description("Fix issue https://github.com/mookid8000/DillPickle/issues#issue/18")]
     public class TestErrorScenario02 : FixtureBase
     {
-        [Test]
-        public void Something()
+        [Test, Description("Bug came from steps being compared without checking their parameter lists...")]
+        public void Fixit()
         {
             var parser = new StupidGherkinParser();
             var result = parser.Parse(@"
