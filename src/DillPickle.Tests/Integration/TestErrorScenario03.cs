@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace DillPickle.Tests.Integration
 {
-    [TestFixture]
+    [TestFixture, Description("Fix issue https://github.com/mookid8000/DillPickle/issues#issue/17")]
     public class TestErrorScenario03 : IntegrationTestBase
     {
         CultureInfo currentCulture;
