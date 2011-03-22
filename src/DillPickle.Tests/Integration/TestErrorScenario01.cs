@@ -2,26 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DillPickle.Framework.Executor.Attributes;
-using DillPickle.Framework.Parser;
-using DillPickle.Framework.Runner;
 using NUnit.Framework;
 
 namespace DillPickle.Tests.Integration
 {
     [TestFixture]
-    public class TestErrorScenario01 : FixtureBase
+    public class TestErrorScenario01 : IntegrationTestBase
     {
         [Test]
         public void ScenarioWithMultilineStepArgumentsAndParameters()
         {
-            var activator = new TrivialObjectActivator();
-            var runner = new FeatureRunner(activator,
-                                           new IntelligentPropertySetter(new TrivialPropertySetter(), activator));
-
-            var parser = new StupidGherkinParser();
-            var result =
-                parser.Parse(
-                    @"
+            Run(
+                @"
 Feature: Show all notes
   As a user
   In order to view contents of entire system
@@ -39,9 +31,8 @@ Feature: Show all notes
       | Bonnie ""Prince"" Billy | The Glory Goes          |
       | Josh Rouse            | Winter In The Hamptons  |
       | Martha Wainwright     | This Life               |
-");
-
-            result.Features.ForEach(f => runner.Run(f, new[] {typeof (ActionSteps)}, NullFilter()));
+",
+                typeof (Steps));
 
             var expectedCalls =
                 new[]
@@ -52,7 +43,7 @@ Feature: Show all notes
                         @"Then table Notes contains: Bonnie ""Prince"" Billy/The Glory Goes,Josh Rouse/Winter In The Hamptons,Martha Wainwright/This Life"
                     };
 
-            Assert.IsTrue(ActionSteps.Calls.SequenceEqual(expectedCalls),
+            Assert.IsTrue(Steps.Calls.SequenceEqual(expectedCalls),
                           @"
 Expected, but missing:
 {0}
@@ -60,21 +51,12 @@ Expected, but missing:
 Unexpected:
 {1}
 ",
-                          expectedCalls.Except(ActionSteps.Calls).JoinToString(Environment.NewLine),
-                          ActionSteps.Calls.Except(expectedCalls).JoinToString(Environment.NewLine));
-        }
-
-        RunnerOptions NullFilter()
-        {
-            return new RunnerOptions
-                       {
-                           Filter = TagFilter.Empty(),
-                           DruRun = false,
-                       };
+                          expectedCalls.Except(Steps.Calls).JoinToString(Environment.NewLine),
+                          Steps.Calls.Except(expectedCalls).JoinToString(Environment.NewLine));
         }
 
         [ActionSteps]
-        class ActionSteps
+        class Steps
         {
             public static readonly List<string> Calls = new List<string>();
 

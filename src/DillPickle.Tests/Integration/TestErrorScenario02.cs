@@ -1,19 +1,16 @@
 using System.Collections.Generic;
 using DillPickle.Framework.Executor.Attributes;
-using DillPickle.Framework.Parser;
-using DillPickle.Framework.Runner;
 using NUnit.Framework;
 
 namespace DillPickle.Tests.Integration
 {
     [TestFixture, Description("Fix issue https://github.com/mookid8000/DillPickle/issues#issue/18")]
-    public class TestErrorScenario02 : FixtureBase
+    public class TestErrorScenario02 : IntegrationTestBase
     {
         [Test, Description("Bug came from steps being compared without checking their parameter lists...")]
         public void Fixit()
         {
-            var parser = new StupidGherkinParser();
-            var result = parser.Parse(@"
+            Run(@"
 
 Scenario: Error!
 
@@ -28,13 +25,7 @@ Then we have the following signals:
 Then we have the following signals:
     | Tag | Value |
     | REG_T1.001 | 7 kW |
-");
-
-            var activator = new TrivialObjectActivator();
-            var runner = new FeatureRunner(activator,
-                                           new IntelligentPropertySetter(new TrivialPropertySetter(), activator));
-
-            result.Features.ForEach(f => runner.Run(f, new[] { typeof(Steps) }, NullFilter()));
+", typeof(Steps));
 
             Assert.AreEqual(3, Steps.Calls.Count);
 
@@ -65,15 +56,6 @@ Then we have the following signals:
                 public string Tag { get; set; }
                 public string Value { get; set; }
             }
-        }
-
-        RunnerOptions NullFilter()
-        {
-            return new RunnerOptions
-                       {
-                           Filter = TagFilter.Empty(),
-                           DruRun = false,
-                       };
         }
     }
 }

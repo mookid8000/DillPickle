@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using DillPickle.Framework.Executor;
 using DillPickle.Framework.Parser.Api;
 
@@ -53,8 +54,9 @@ namespace DillPickle.Framework.Matcher
 
                 if (index%2 == 0)
                 {
-                    tokens.AddRange(section.Split(" ,;.".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
-                                        .Select(s => CreateToken(s)));
+                    var tempTokens = Split(section);
+                    
+                    tokens.AddRange(tempTokens.Select(s => CreateToken(s)));
                 }
                 else
                 {
@@ -63,6 +65,11 @@ namespace DillPickle.Framework.Matcher
             }
 
             return tokens.ToArray();
+        }
+
+        IEnumerable<string> Split(string section)
+        {
+            return section.Split(new[]{";", ":", " ", ". ", ", "}, StringSplitOptions.RemoveEmptyEntries);
         }
 
         Token CreateToken(string s)
