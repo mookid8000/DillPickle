@@ -12,7 +12,7 @@ using GoCommando.Attributes;
 
 namespace DillPickle.Framework
 {
-    [Banner(@"DillPickle
+    [Banner(@"DillPickle v. {assemblyVersion}
 
 (c) 2010 Mogens Heller Grabe
 mookid8000@gmail.com
