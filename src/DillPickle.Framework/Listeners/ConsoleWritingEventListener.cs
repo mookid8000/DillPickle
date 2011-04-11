@@ -19,6 +19,8 @@ namespace DillPickle.Framework.Listeners
             defaultColor = Console.ForegroundColor;
         }
 
+        public bool ShowTimestamps { get; set; }
+
         public override void BeforeFeature(Feature feature)
         {
             WriteLine(ConsoleColor.Cyan, 0, @"{0}
@@ -35,12 +37,11 @@ Scenario: {0}", scenario.Headline);
 
         public override void AfterStep(Feature feature, Scenario scenario, Step step, StepResult result)
         {
-            WriteLine(Color(result.Result), 2, "{0} {1}{2}",
+            WriteLine(Color(result.Result), 2, "{0} {1}{2}{3}",
                       step.Prefix,
                       step.Text,
-                      result.Result != Result.Success
-                          ? string.Format(" - {0}", result.Result)
-                          : "");
+                      PossiblyTimestamp(),
+                      PossiblyResult(result));
 
             if (step.Parameters.Any())
             {
@@ -51,6 +52,18 @@ Scenario: {0}", scenario.Headline);
             {
                 errorMessages.Add(result.ErrorMessage);
             }
+        }
+
+        string PossiblyTimestamp()
+        {
+            return ShowTimestamps ? string.Format(" [{0}]", DateTime.Now.ToString("hh:MM")) : "";
+        }
+
+        string PossiblyResult(StepResult result)
+        {
+            return result.Result != Result.Success
+                       ? string.Format(" - {0}", result.Result)
+                       : "";
         }
 
         void WriteParameters(Result result, IEnumerable<Dictionary<string, string>> parameters)

@@ -33,7 +33,10 @@ namespace DillPickle.Framework.Runner
             var assemblyPath = arguments.AssemblyPath;
             var featurePattern = arguments.FeaturePattern;
 
-            featureRunner.AddListener(new ConsoleWritingEventListener());
+            featureRunner.AddListener(new ConsoleWritingEventListener
+                                          {
+                                              ShowTimestamps = arguments.ShowTimestamps,
+                                          });
 
             var filter = new TagFilter(arguments.TagsToInclude, arguments.TagsToExclude);
 

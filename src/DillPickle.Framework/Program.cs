@@ -37,6 +37,10 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
         [NamedArgument("dryrun", "d")]
         public bool DryRun { get; set; }
 
+        [NamedArgument("timestamps", "t")]
+        [Description("Specifies that all steps will have the current time appended to the text output")]
+        public bool ShowTimestamps { get; set; }
+
         [NamedArgument("success", "s")]
         [Description("Specifies that the runner should stop executing if a step execution results in anything but success")]
         public bool SuccessRequired { get; set; }
@@ -81,6 +85,7 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
                                    TagsToExclude = Split(Exclude),
                                    DruRun = DryRun,
                                    SuccessRequired = SuccessRequired,
+                                   ShowTimestamps = ShowTimestamps,
                                });
         }
 

@@ -1,3 +1,5 @@
+using System;
+
 namespace DillPickle.Framework.Runner.Api
 {
     ///<summary>
@@ -34,5 +36,10 @@ namespace DillPickle.Framework.Runner.Api
         /// Indicates whether the runner should stop execution upon encountering an error
         /// </summary>
         public bool SuccessRequired { get; set; }
+
+        /// <summary>
+        /// Indicates that the console output should have the current time appended to the text of each step.
+        /// </summary>
+        public bool ShowTimestamps { get; set; }
     }
 }
