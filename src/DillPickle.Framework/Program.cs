@@ -34,6 +34,7 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
         [Example(@"..\src\SomeProject.Specs\Features\*.feature")]
         public string FeaturePattern { get; set; }
 
+        [Description("Specifies that the runner should not actually execute any steps. Thus all results will be either PENDING or SUCCESS")]
         [NamedArgument("dryrun", "d")]
         public bool DryRun { get; set; }
 
