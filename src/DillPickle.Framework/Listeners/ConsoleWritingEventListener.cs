@@ -19,7 +19,7 @@ namespace DillPickle.Framework.Listeners
             defaultColor = Console.ForegroundColor;
         }
 
-        public bool ShowTimestamps { get; set; }
+        public virtual bool ShowTimestamps { get; set; }
 
         public override void BeforeFeature(Feature feature)
         {
@@ -54,9 +54,11 @@ Scenario: {0}", scenario.Headline);
             }
         }
 
-        string PossiblyTimestamp()
+        public virtual DateTime CurrentTime { get; set; }
+
+        public virtual string PossiblyTimestamp()
         {
-            return ShowTimestamps ? string.Format(" [{0}]", DateTime.Now.ToString("hh:MM")) : "";
+            return ShowTimestamps ? string.Format(" [{0}]", CurrentTime.ToString("hh:mm:ss")) : "";
         }
 
         string PossiblyResult(StepResult result)

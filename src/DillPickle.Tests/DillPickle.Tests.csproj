@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8B3A6D9F-F743-4C61-96E3-09DEC67A59A1}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -70,6 +70,7 @@
     <Compile Include="Integration\TestErrorScenario03.cs" />
     <Compile Include="Integration\TestErrorScenario04.cs" />
     <Compile Include="Runner\TestAssemblyLoader.cs" />
+    <Compile Include="Runner\TestConsoleWritingEventListener.cs" />
     <Compile Include="Runner\TestDefaultCommandLineRunner.cs" />
     <Compile Include="Runner\TestFeatureFileFinder.cs" />
     <Compile Include="Runner\TestFeatureRunner.cs" />
