@@ -21,6 +21,8 @@ http://mookid.dk/oncode
 Dill-flavored Gherkin-goodness for your BDD needs
 
 Check out http://mookid.dk/oncode/dillpickle for more information.
+
+* All times displayed are in local time *
 ")]
     public class Program : ICommando
     {
@@ -38,9 +40,9 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
         [NamedArgument("dryrun", "d")]
         public bool DryRun { get; set; }
 
-        [NamedArgument("timestamps", "t")]
+        [NamedArgument("showcurrenttime", "t")]
         [Description("Specifies that all steps will have the current time appended to the text output")]
-        public bool ShowTimestamps { get; set; }
+        public bool ShowCurrentTime { get; set; }
 
         [NamedArgument("success", "s")]
         [Description("Specifies that the runner should stop executing if a step execution results in anything but success")]
@@ -86,7 +88,7 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
                                    TagsToExclude = Split(Exclude),
                                    DruRun = DryRun,
                                    SuccessRequired = SuccessRequired,
-                                   ShowTimestamps = ShowTimestamps,
+                                   ShowCurrentTime = ShowCurrentTime,
                                });
         }
 

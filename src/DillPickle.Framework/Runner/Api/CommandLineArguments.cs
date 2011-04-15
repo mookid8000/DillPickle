@@ -40,6 +40,6 @@ namespace DillPickle.Framework.Runner.Api
         /// <summary>
         /// Indicates that the console output should have the current time appended to the text of each step.
         /// </summary>
-        public bool ShowTimestamps { get; set; }
+        public bool ShowCurrentTime { get; set; }
     }
 }
