@@ -54,7 +54,11 @@ Scenario: {0}", scenario.Headline);
             }
         }
 
-        public virtual DateTime CurrentTime { get; set; }
+        private DateTime _currentTime;
+        public virtual DateTime CurrentTime
+        {
+            get { return DateTime.Now; }
+        }
 
         public virtual string PossiblyTimestamp()
         {
