@@ -13,7 +13,7 @@ namespace DillPickle.Tests.Runner
     public class TestConsoleWritingEventListener : FixtureBase
     {
         [Test]
-        public void TestTimestampFormatShowTimestamp()
+        public void TestTimestampFormatShowTimestampFromLocalTime()
         {
             // Arrange
             var consoleWriter =  new ConsoleWritingEventListener();
@@ -25,8 +25,10 @@ namespace DillPickle.Tests.Runner
             consoleWriter.ShowTimestamps = true;
             string timeStamp = consoleWriter.PossiblyTimestamp();
 
+            var offset = TimeZone.CurrentTimeZone.GetUtcOffset(Time.Now());
+
             // Assert
-            Assert.AreEqual(" [23:59:59]", timeStamp);
+            Assert.AreEqual(string.Format(" [23:59:59 +0{0}:00]", offset.Hours), timeStamp); // will only work in single-digit offsets from UTC
         }
 
         [Test]

@@ -57,7 +57,7 @@ Scenario: {0}", scenario.Headline);
 
         public string PossiblyTimestamp()
         {
-            return ShowTimestamps ? string.Format(" [{0}]", Time.Now().ToString("HH:mm:ss")) : "";
+            return ShowTimestamps ? string.Format(" [{0}]", Time.Now().ToString("HH:mm:ss zzzzz")) : "";
         }
 
         string PossiblyResult(StepResult result)
