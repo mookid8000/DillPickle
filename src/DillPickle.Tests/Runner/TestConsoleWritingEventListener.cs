@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DillPickle.Framework.Listeners;
+using DillPickle.Framework.Types;
 using NUnit.Framework;
 using Rhino.Mocks;
 
@@ -15,13 +16,13 @@ namespace DillPickle.Tests.Runner
         public void TestTimestampFormatShowTimestamp()
         {
             // Arrange
-            var consoleWriter = Mock<ConsoleWritingEventListener>();
+            var consoleWriter =  new ConsoleWritingEventListener();
             var currentTime = new DateTime(2011, 04, 14, 23, 59, 59);
 
-            consoleWriter.Stub(cwel => cwel.ShowTimestamps).Return(true);
-            consoleWriter.Stub(cwel => cwel.CurrentTime).Return(currentTime);
+            Time.SetTime(currentTime);
 
             // Act
+            consoleWriter.ShowTimestamps = true;
             string timeStamp = consoleWriter.PossiblyTimestamp();
 
             // Assert
@@ -32,17 +33,15 @@ namespace DillPickle.Tests.Runner
         public void TestTimestampFormatDoNotShowTimestamp()
         {
             // Arrange
-            var consoleWriter = Mock<ConsoleWritingEventListener>();
+            var consoleWriter = new ConsoleWritingEventListener();
             var currentTime = new DateTime(2011, 04, 14, 23, 59, 59);
-
-            consoleWriter.Stub(cwel => cwel.ShowTimestamps).Return(false);
-            consoleWriter.Stub(cwel => cwel.CurrentTime).Return(currentTime);
+            Time.SetTime(currentTime);
 
             // Act
             string timeStamp = consoleWriter.PossiblyTimestamp();
 
             // Assert
-            Assert.AreEqual("", timeStamp);
+            Assert.AreEqual(string.Empty, timeStamp);
         }
     }
 }

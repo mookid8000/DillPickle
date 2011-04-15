@@ -6,6 +6,7 @@ using DillPickle.Framework.Extensions;
 using DillPickle.Framework.Parser.Api;
 using DillPickle.Framework.Runner;
 using DillPickle.Framework.Runner.Api;
+using DillPickle.Framework.Types;
 
 namespace DillPickle.Framework.Listeners
 {
@@ -54,15 +55,9 @@ Scenario: {0}", scenario.Headline);
             }
         }
 
-        private DateTime _currentTime;
-        public virtual DateTime CurrentTime
-        {
-            get { return DateTime.Now; }
-        }
-
         public virtual string PossiblyTimestamp()
         {
-            return ShowTimestamps ? string.Format(" [{0}]", CurrentTime.ToString("hh:mm:ss")) : "";
+            return ShowTimestamps ? string.Format(" [{0}]", Time.Now().ToString("HH:mm:ss")) : "";
         }
 
         string PossiblyResult(StepResult result)
