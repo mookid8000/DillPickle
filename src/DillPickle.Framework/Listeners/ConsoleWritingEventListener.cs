@@ -55,7 +55,7 @@ Scenario: {0}", scenario.Headline);
             }
         }
 
-        public virtual string PossiblyTimestamp()
+        public string PossiblyTimestamp()
         {
             return ShowTimestamps ? string.Format(" [{0}]", Time.Now().ToString("HH:mm:ss")) : "";
         }
