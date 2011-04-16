@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using DillPickle.Framework.Listeners;
 using DillPickle.Framework.Types;
 using NUnit.Framework;
-using Rhino.Mocks;
 
 namespace DillPickle.Tests.Runner
 {
@@ -13,20 +9,41 @@ namespace DillPickle.Tests.Runner
     public class TestConsoleWritingEventListener : FixtureBase
     {
         [Test]
-        public void TestTimestampFormatShowTimestamp()
+        public void TestTimestampFormatShowTimestampFromLocalTime()
         {
             // Arrange
             var consoleWriter =  new ConsoleWritingEventListener();
-            var currentTime = new DateTime(2011, 04, 14, 23, 59, 59);
+            var currentTime = new DateTime(2011, 04, 14, 23, 59, 59, DateTimeKind.Local);
 
             Time.SetTime(currentTime);
 
             // Act
-            consoleWriter.ShowTimestamps = true;
-            string timeStamp = consoleWriter.PossiblyTimestamp();
+            consoleWriter.ShowCurrentTimes = true;
+            string timeStamp = consoleWriter.PossiblyTimes();
+
+            Time.Reset();
 
             // Assert
             Assert.AreEqual(" [23:59:59]", timeStamp);
+        }
+
+        [Test]
+        public void TestTimestampFormatShowTimestampFromUTCTime()
+        {
+            // Arrange
+            var consoleWriter = new ConsoleWritingEventListener();
+            var currentTime = new DateTime(2011, 04, 14, 23, 59, 59, DateTimeKind.Utc);
+
+            Time.SetTime(currentTime);
+
+            // Act
+            consoleWriter.ShowCurrentTimes = true;
+            string timeStamp = consoleWriter.PossiblyTimes();
+
+            Time.Reset();
+
+            // Assert
+            Assert.AreEqual(" [01:59:59]", timeStamp);
         }
 
         [Test]
@@ -38,7 +55,9 @@ namespace DillPickle.Tests.Runner
             Time.SetTime(currentTime);
 
             // Act
-            string timeStamp = consoleWriter.PossiblyTimestamp();
+            string timeStamp = consoleWriter.PossiblyTimes();
+
+            Time.Reset();
 
             // Assert
             Assert.AreEqual(string.Empty, timeStamp);

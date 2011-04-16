@@ -35,7 +35,7 @@ namespace DillPickle.Framework.Runner
 
             featureRunner.AddListener(new ConsoleWritingEventListener
                                           {
-                                              ShowTimestamps = arguments.ShowTimestamps,
+                                              ShowCurrentTimes = arguments.ShowCurrentTime,
                                           });
 
             var filter = new TagFilter(arguments.TagsToInclude, arguments.TagsToExclude);
