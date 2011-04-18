@@ -22,8 +22,7 @@ Dill-flavored Gherkin-goodness for your BDD needs
 
 Check out http://mookid.dk/oncode/dillpickle for more information.
 
-* All times displayed are in local time *
-")]
+* All times displayed are in local time *")]
     public class Program : ICommando
     {
         [PositionalArgument]
