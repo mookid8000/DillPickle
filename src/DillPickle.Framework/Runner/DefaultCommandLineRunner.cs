@@ -33,8 +33,6 @@ namespace DillPickle.Framework.Runner
             var assemblyPath = arguments.AssemblyPath;
             var featurePattern = arguments.FeaturePattern;
 
-            SetUpListeners(arguments);
-
             var filter = new TagFilter(arguments.TagsToInclude, arguments.TagsToExclude);
 
             var featuresToRun = featureFileFinder.Find(featurePattern)
@@ -52,6 +50,8 @@ namespace DillPickle.Framework.Runner
                                   DruRun = arguments.DruRun,
                                   SuccessRequired = arguments.SuccessRequired,
                               };
+
+            SetUpListeners(arguments);
 
             featureRunner.Commission();
 
@@ -74,6 +74,8 @@ namespace DillPickle.Framework.Runner
 
             if (arguments.TextOutputFile.IsSet())
             {
+                Console.WriteLine("Outputting results to {0}", arguments.TextOutputFile);
+
                 featureRunner.AddListener(new TextFileOutputEventListener(arguments.TextOutputFile));
             }
         }
