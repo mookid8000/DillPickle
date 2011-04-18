@@ -12,5 +12,10 @@ namespace System
 
             return string.Join(separator, strings.ToArray());
         }
+
+        public static bool IsSet(this string str)
+        {
+            return !string.IsNullOrEmpty(str) && str.Trim() != "";
+        }
     }
 }

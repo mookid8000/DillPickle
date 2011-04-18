@@ -5,6 +5,10 @@ namespace DillPickle.Framework.Runner
 {
     public class DefaultListener : IListener
     {
+        public virtual void Initialize()
+        {
+        }
+
         public virtual void BeforeFeature(Feature feature)
         {
         }
@@ -26,6 +30,10 @@ namespace DillPickle.Framework.Runner
         }
 
         public virtual void AfterFeature(Feature feature, FeatureResult result)
+        {
+        }
+
+        public virtual void Finalize()
         {
         }
     }

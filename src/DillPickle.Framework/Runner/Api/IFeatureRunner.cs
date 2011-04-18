@@ -10,5 +10,7 @@ namespace DillPickle.Framework.Runner.Api
     {
         FeatureResult Run(Feature feature, Type[] types, RunnerOptions filter);
         void AddListener(IListener listener);
+        void Commission();
+        void Decommission();
     }
 }

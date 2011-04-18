@@ -1,5 +1,3 @@
-using System;
-
 namespace DillPickle.Framework.Runner.Api
 {
     ///<summary>
@@ -41,5 +39,10 @@ namespace DillPickle.Framework.Runner.Api
         /// Indicates that the console output should have the current time appended to the text of each step.
         /// </summary>
         public bool ShowCurrentTime { get; set; }
+
+        /// <summary>
+        /// If set, the results of running the features will be output to this file
+        /// </summary>
+        public string TextOutputFile { get; set; }
     }
 }

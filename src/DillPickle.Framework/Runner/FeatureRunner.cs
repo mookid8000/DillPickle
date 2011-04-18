@@ -279,6 +279,16 @@ namespace DillPickle.Framework.Runner
             listeners.Add(listener);
         }
 
+        public void Commission()
+        {
+            listeners.ForEach(l => l.Initialize());
+        }
+
+        public void Decommission()
+        {
+            listeners.ForEach(l => l.Finalize());
+        }
+
         void ExecuteMethodsDecoratedWith<T>(IEnumerable<ActionStepsObjectHolder> collection) where T : HookAttribute
         {
             foreach (var item in collection)

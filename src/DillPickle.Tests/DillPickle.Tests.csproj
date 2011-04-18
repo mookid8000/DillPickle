@@ -70,8 +70,9 @@
     <Compile Include="Integration\TestErrorScenario03.cs" />
     <Compile Include="Integration\TestErrorScenario04.cs" />
     <Compile Include="Integration\TestErrorScenario05.cs" />
+    <Compile Include="Listeners\TestDefaultTextOutputEventListener.cs" />
     <Compile Include="Runner\TestAssemblyLoader.cs" />
-    <Compile Include="Runner\TestConsoleWritingEventListener.cs" />
+    <Compile Include="Listeners\TestConsoleWritingEventListener.cs" />
     <Compile Include="Runner\TestDefaultCommandLineRunner.cs" />
     <Compile Include="Runner\TestFeatureFileFinder.cs" />
     <Compile Include="Runner\TestFeatureRunner.cs" />

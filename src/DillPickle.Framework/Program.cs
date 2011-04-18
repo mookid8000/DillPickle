@@ -41,7 +41,7 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
         public bool DryRun { get; set; }
 
         [NamedArgument("showcurrenttime", "t")]
-        [Description("Specifies that all steps will have the current time appended to the text output")]
+        [Description("Specifies that all steps will have the current (local) time appended to the text output")]
         public bool ShowCurrentTime { get; set; }
 
         [NamedArgument("success", "s")]
@@ -55,6 +55,10 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
         [NamedArgument("exclude", "e")]
         [Description("Specifies which tags to exclude")]
         public string Exclude { get; set; }
+
+        [NamedArgument("textoutput", "")]
+        [Description("If set, the results of executing the features will be output to this file")]
+        public string TextOutputFile { get; set; }
 
         static int Main(string[] args)
         {
@@ -89,6 +93,7 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
                                    DruRun = DryRun,
                                    SuccessRequired = SuccessRequired,
                                    ShowCurrentTime = ShowCurrentTime,
+                                   TextOutputFile = TextOutputFile,
                                });
         }
 

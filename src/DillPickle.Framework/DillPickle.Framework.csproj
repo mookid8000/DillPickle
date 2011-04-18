@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{99222B69-4839-4C83-AFAA-7BF52B16133B}</ProjectGuid>
     <OutputType>Exe</OutputType>
@@ -74,6 +74,8 @@
     <Compile Include="Io\FileReader.cs" />
     <Compile Include="Io\Api\IFileReader.cs" />
     <Compile Include="Listeners\ConsoleWritingEventListener.cs" />
+    <Compile Include="Listeners\DefaultTextOutputEventListener.cs" />
+    <Compile Include="Listeners\TextFileOutputEventListener.cs" />
     <Compile Include="Matcher\StepMatch.cs" />
     <Compile Include="Matcher\StepMatcher.cs" />
     <Compile Include="Matcher\StringToken.cs" />

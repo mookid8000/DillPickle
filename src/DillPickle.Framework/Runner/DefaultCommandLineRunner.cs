@@ -33,10 +33,7 @@ namespace DillPickle.Framework.Runner
             var assemblyPath = arguments.AssemblyPath;
             var featurePattern = arguments.FeaturePattern;
 
-            featureRunner.AddListener(new ConsoleWritingEventListener
-                                          {
-                                              ShowCurrentTimes = arguments.ShowCurrentTime,
-                                          });
+            SetUpListeners(arguments);
 
             var filter = new TagFilter(arguments.TagsToInclude, arguments.TagsToExclude);
 
@@ -56,11 +53,28 @@ namespace DillPickle.Framework.Runner
                                   SuccessRequired = arguments.SuccessRequired,
                               };
 
+            featureRunner.Commission();
+
             foreach(var feature in featuresToRun)
             {
                 var featureResult = featureRunner.Run(feature, actionStepsTypes, options);
 
                 if (options.SuccessRequired && !featureResult.Success) break;
+            }
+
+            featureRunner.Decommission();
+        }
+
+        void SetUpListeners(CommandLineArguments arguments)
+        {
+            featureRunner.AddListener(new ConsoleWritingEventListener
+                                          {
+                                              ShowCurrentTimes = arguments.ShowCurrentTime,
+                                          });
+
+            if (arguments.TextOutputFile.IsSet())
+            {
+                featureRunner.AddListener(new TextFileOutputEventListener(arguments.TextOutputFile));
             }
         }
     }

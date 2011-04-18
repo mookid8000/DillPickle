@@ -3,7 +3,7 @@ using DillPickle.Framework.Listeners;
 using DillPickle.Framework.Types;
 using NUnit.Framework;
 
-namespace DillPickle.Tests.Runner
+namespace DillPickle.Tests.Listeners
 {
     [TestFixture]
     public class TestConsoleWritingEventListener : FixtureBase
