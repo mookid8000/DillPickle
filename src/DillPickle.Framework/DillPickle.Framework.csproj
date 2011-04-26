@@ -67,9 +67,11 @@
     <Compile Include="Executor\Attributes\GivenAttribute.cs" />
     <Compile Include="Executor\Attributes\Base\HookAttribute.cs" />
     <Compile Include="Executor\Attributes\Base\StepAttribute.cs" />
+    <Compile Include="Executor\Attributes\IncludeActionSteps.cs" />
     <Compile Include="Executor\Attributes\ThenAttribute.cs" />
     <Compile Include="Executor\Attributes\WhenAttribute.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Infrastructure\MiniContainer.cs" />
     <Compile Include="Io\FileReader.cs" />
     <Compile Include="Io\Api\IFileReader.cs" />

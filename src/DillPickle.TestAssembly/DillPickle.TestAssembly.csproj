@@ -45,6 +45,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionSteps\PicklesShouldWork01.cs" />
+    <Compile Include="ActionSteps\PicklesShouldWork02.cs" />
+    <Compile Include="ActionSteps\PicklesShouldWork03.cs" />
+    <Compile Include="ActionSteps\PicklesShouldWork04.cs" />
+    <Compile Include="ActionSteps\PicklesShouldWork05.cs" />
     <Compile Include="AnotherActionStepsClass.cs" />
     <Compile Include="CalculatorActionSteps.cs" />
     <Compile Include="OneActionStepsClass.cs" />
@@ -53,22 +58,22 @@
     <Compile Include="ThirdActionStepsClass.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Features\01_Pickles_should_work.feature">
+    <None Include="Features\Pickles_should_work_01.feature">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Features\02_Pickles_should_work.feature">
+    <None Include="Features\Pickles_should_work_02.feature">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Features\03_Pickles_should_work.feature">
+    <None Include="Features\Pickles_should_work_03.feature">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Features\04_Pickles_should_work.feature">
+    <None Include="Features\Pickles_should_work_04.feature">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Features\05_Pickles_should_work.feature">
+    <None Include="Features\Pickles_should_work_05.feature">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

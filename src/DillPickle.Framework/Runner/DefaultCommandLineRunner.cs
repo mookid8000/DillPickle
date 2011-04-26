@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DillPickle.Framework.Io.Api;
@@ -36,13 +37,23 @@ namespace DillPickle.Framework.Runner
             var filter = new TagFilter(arguments.TagsToInclude, arguments.TagsToExclude);
 
             var featuresToRun = featureFileFinder.Find(featurePattern)
-                .SelectMany(fileName => gherkinParser.Parse(fileName, fileReader.Read(fileName, Encoding.UTF8)).Features)
-                .Where(f => filter.IsSatisfiedBy(f.Tags));
+                .SelectMany(fileName => GetFeatures(fileName)
+                                            .Select(f => new
+                                                             {
+                                                                 FeatureFileName = fileName,
+                                                                 Feature = f
+                                                             }))
+                .Where(f => filter.IsSatisfiedBy(f.Feature.Tags));
 
             Console.WriteLine("Found {0} features containing {1} executable scenarios", featuresToRun.Count(),
-                              featuresToRun.Sum(f => f.Scenarios.Count));
+                              featuresToRun.Sum(f => f.Feature.Scenarios.Count));
 
-            var actionStepsTypes = actionStepsFinder.FindTypesWithActionSteps(assemblyPath);
+            var featuresAndStepsTypes = featuresToRun
+                .Select(f => new
+                                 {
+                                     f.Feature,
+                                     ActionStepsTypes = actionStepsFinder.FindTypesWithActionSteps(assemblyPath, f.FeatureFileName)
+                                 });
 
             var options = new RunnerOptions
                               {
@@ -55,14 +66,19 @@ namespace DillPickle.Framework.Runner
 
             featureRunner.Commission();
 
-            foreach(var feature in featuresToRun)
+            foreach (var feature in featuresAndStepsTypes)
             {
-                var featureResult = featureRunner.Run(feature, actionStepsTypes, options);
+                var featureResult = featureRunner.Run(feature.Feature, feature.ActionStepsTypes, options);
 
                 if (options.SuccessRequired && !featureResult.Success) break;
             }
 
             featureRunner.Decommission();
+        }
+
+        List<Feature> GetFeatures(string fileName)
+        {
+            return gherkinParser.Parse(fileName, fileReader.Read(fileName, Encoding.UTF8)).Features;
         }
 
         void SetUpListeners(CommandLineArguments arguments)

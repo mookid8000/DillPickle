@@ -18,7 +18,7 @@ namespace DillPickle.Tests.Runner
         [Test]
         public void ThrowsIfAssemblyDoesNotExist()
         {
-            Assert.Throws<FileNotFoundException>(() => sut.LoadAssemblyWithApplicationConfigurationIfPossible(@"c:\temp\this-file-does-most-likely-not-exist.dll"));
+            Assert.Throws<FileNotFoundException>(() => sut.LoadConfiguredAssembly(@"c:\temp\this-file-does-most-likely-not-exist.dll"));
         }
 
         [Test, Ignore("Can't make this one pass... it seems to work as expected though when using it from the cli")]
@@ -28,7 +28,7 @@ namespace DillPickle.Tests.Runner
             Assert.IsNull(ConfigurationManager.AppSettings["some-random-appsetting"]);
 
             var path = @"..\..\..\DillPickle.TestAssembly\bin\Debug\DillPickle.TestAssembly.dll";
-            var assembly = sut.LoadAssemblyWithApplicationConfigurationIfPossible(path);
+            var assembly = sut.LoadConfiguredAssembly(path);
 
             Assert.AreEqual("some-random-value", ConfigurationManager.AppSettings["some-random-appsetting"]);
         }

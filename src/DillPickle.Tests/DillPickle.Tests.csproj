@@ -71,6 +71,7 @@
     <Compile Include="Integration\TestErrorScenario04.cs" />
     <Compile Include="Integration\TestErrorScenario05.cs" />
     <Compile Include="Listeners\TestDefaultTextOutputEventListener.cs" />
+    <Compile Include="Runner\TestActionStepsFinder.cs" />
     <Compile Include="Runner\TestAssemblyLoader.cs" />
     <Compile Include="Listeners\TestConsoleWritingEventListener.cs" />
     <Compile Include="Runner\TestDefaultCommandLineRunner.cs" />

@@ -7,7 +7,7 @@ namespace DillPickle.Framework.Runner
 {
     public class AssemblyLoader : IAssemblyLoader
     {
-        public Assembly LoadAssemblyWithApplicationConfigurationIfPossible(string assemblyPath)
+        public Assembly LoadConfiguredAssembly(string assemblyPath)
         {
             var absoluteAssemblyPath = GenerateAbsolutePath(assemblyPath);
 
@@ -23,7 +23,7 @@ namespace DillPickle.Framework.Runner
             return assembly;
         }
 
-        public Assembly LoadAssembly(string assemblyPath)
+        Assembly LoadAssembly(string assemblyPath)
         {
             var absoluteAssemblyPath = GenerateAbsolutePath(assemblyPath);
             

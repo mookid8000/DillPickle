@@ -39,8 +39,12 @@ namespace DillPickle.Tests.Runner
             var feature2 = Stub("file2", "bla2", "feature2", new[] { "bom" });
             var feature3 = Stub("file3", "bla3", "feature3", new[] { "bim" });
 
-            var actionStepsTypes = new Type[0];
-            actionStepsFinder.Stub(a => a.FindTypesWithActionSteps("some path")).Return(actionStepsTypes);
+            var actionStepsTypes1 = new Type[0];
+            var actionStepsTypes2 = new Type[0];
+            var actionStepsTypes3 = new Type[0];
+            actionStepsFinder.Stub(a => a.FindTypesWithActionSteps("some path", "file1")).Return(actionStepsTypes1);
+            actionStepsFinder.Stub(a => a.FindTypesWithActionSteps("some path", "file2")).Return(actionStepsTypes2);
+            actionStepsFinder.Stub(a => a.FindTypesWithActionSteps("some path", "file3")).Return(actionStepsTypes3);
 
             sut.Execute(new CommandLineArguments
                             {
@@ -56,16 +60,16 @@ namespace DillPickle.Tests.Runner
                                          DruRun = false,
                                      };
 
-            featureRunner.AssertWasCalled(r => r.Run(feature1, actionStepsTypes, expectedOptions));
-            featureRunner.AssertWasCalled(r => r.Run(feature2, actionStepsTypes, expectedOptions));
-            featureRunner.AssertWasNotCalled(r => r.Run(feature3, actionStepsTypes, expectedOptions));
+            featureRunner.AssertWasCalled(r => r.Run(feature1, actionStepsTypes1, expectedOptions));
+            featureRunner.AssertWasCalled(r => r.Run(feature2, actionStepsTypes2, expectedOptions));
+            featureRunner.AssertWasNotCalled(r => r.Run(feature3, actionStepsTypes3, expectedOptions));
         }
 
         [Test]
         public void StopsExecutingIfErrorIsEncountered()
         {
             featureFileFinder.Stub(f => f.Find(Arg<string>.Is.Anything)).Return(new[] { "file1", "file2" });
-            actionStepsFinder.Stub(a => a.FindTypesWithActionSteps(Arg<string>.Is.Anything)).Return(new Type[0]);
+            actionStepsFinder.Stub(a => a.FindTypesWithActionSteps(Arg<string>.Is.Anything, Arg<string>.Is.Anything)).Return(new Type[0]);
 
             var feature1 = Stub("file1", "bla1", "feature1", new[] { "bom" });
             var feature2 = Stub("file2", "bla2", "feature2", new[] { "bom" });
@@ -106,7 +110,7 @@ namespace DillPickle.Tests.Runner
         public void StopsExecutingIfPendingIsEncountered()
         {
             featureFileFinder.Stub(f => f.Find(Arg<string>.Is.Anything)).Return(new[] { "file1", "file2" });
-            actionStepsFinder.Stub(a => a.FindTypesWithActionSteps(Arg<string>.Is.Anything)).Return(new Type[0]);
+            actionStepsFinder.Stub(a => a.FindTypesWithActionSteps(Arg<string>.Is.Anything, Arg<string>.Is.Anything)).Return(new Type[0]);
 
             var feature1 = Stub("file1", "bla1", "feature1", new[] { "bom" });
             var feature2 = Stub("file2", "bla2", "feature2", new[] { "bom" });
