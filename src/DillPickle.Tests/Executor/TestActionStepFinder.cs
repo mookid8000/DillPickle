@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Linq;
 using DillPickle.Framework.Parser.Api;
 using NUnit.Framework;
 using DillPickle.Framework.Executor;
@@ -21,7 +21,6 @@ namespace DillPickle.Tests.Executor
             Assert.AreEqual(expectedStepType, method.StepType);
             Assert.AreEqual(expectedText, method.Text);
         }
-
 
         [ActionSteps]
         class HasSomeSteps
@@ -60,12 +59,13 @@ namespace DillPickle.Tests.Executor
         [Test]
         public void CanFindActionsAsExpected()
         {
-            List<ActionStepsClass> classes = finder.Find(typeof (HasSomeSteps));
+            var classes = finder.Find(typeof (HasSomeSteps));
 
             Assert.AreEqual(1, classes.Count);
-            ActionStepsClass c = classes[0];
+            
+            var c = classes[0];
 
-            List<ActionStepMethod> methods = c.ActionStepMethods;
+            var methods = c.ActionStepMethods.ToList();
 
             Assert.AreEqual(6, methods.Count);
             AssertStepMethod(methods[0], StepType.Given, "some precondition");

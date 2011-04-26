@@ -18,9 +18,14 @@ namespace DillPickle.Framework.Executor
             get { return type; }
         }
 
-        public List<ActionStepMethod> ActionStepMethods
+        public IEnumerable<ActionStepMethod> ActionStepMethods
         {
             get { return actionStepMethods; }
+        }
+
+        public void AddMethods(IEnumerable<ActionStepMethod> methodsToAdd)
+        {
+            actionStepMethods.AddRange(methodsToAdd);
         }
     }
 }

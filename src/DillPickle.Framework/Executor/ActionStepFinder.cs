@@ -24,14 +24,14 @@ namespace DillPickle.Framework.Executor
 
         ActionStepsClass CreateActionStepsClass(Type type)
         {
-            IEnumerable<ActionStepMethod> actionStepMethods = type.GetMethods()
+            var actionStepMethods = type.GetMethods()
                 .Where(HasAttribute<StepAttribute>)
                 .SelectMany(m => m.GetCustomAttributes(typeof (StepAttribute), false)
                                      .Cast<StepAttribute>()
                                      .Select(a => CreateActionStepMethod(m, a)));
 
             var stepsClass = new ActionStepsClass(type);
-            stepsClass.ActionStepMethods.AddRange(actionStepMethods);
+            stepsClass.AddMethods(actionStepMethods);
 
             return stepsClass;
         }
