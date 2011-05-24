@@ -63,6 +63,7 @@
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'NET40|AnyCPU'">
     <OutputPath>bin\NET40\</OutputPath>
@@ -71,24 +72,25 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GoCommando, Version=0.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\gocommando\GoCommando.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
+    <Reference Include="System" Condition="'$(Configuration)|$(Platform)' == 'NET35|AnyCPU'">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Xml.Linq">
+    <Reference Include="System.Core" Condition="'$(Configuration)|$(Platform)' == 'NET35|AnyCPU'">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    <Reference Include="System" Condition="'$(Configuration)|$(Platform)' == 'NET40|AnyCPU'">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" Condition="'$(Configuration)|$(Platform)' == 'NET40|AnyCPU'">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions\CommandLineRunnerException.cs" />
