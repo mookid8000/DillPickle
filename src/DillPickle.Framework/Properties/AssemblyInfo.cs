@@ -14,7 +14,7 @@ http://mookid.dk/oncode"
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Mogens Heller Grabe")]
 [assembly: AssemblyProduct("dill")]
-[assembly: AssemblyCopyright("Copyright ©  2010")]
+[assembly: AssemblyCopyright("Copyright © 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -39,5 +39,5 @@ http://mookid.dk/oncode"
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("0.9.0.0")]
-[assembly: AssemblyFileVersion("0.9.0.0")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
