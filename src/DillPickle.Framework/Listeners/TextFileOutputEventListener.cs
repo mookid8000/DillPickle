@@ -15,9 +15,9 @@ namespace DillPickle.Framework.Listeners
             this.textOutputFile = textOutputFile;
         }
 
-        public override void Initialize()
+        public override void Prepare()
         {
-            base.Initialize();
+            base.Prepare();
 
             if (File.Exists(textOutputFile))
             {

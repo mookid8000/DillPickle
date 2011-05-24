@@ -5,7 +5,7 @@ namespace DillPickle.Framework.Runner
 {
     public class DefaultListener : IListener
     {
-        public virtual void Initialize()
+        public virtual void Prepare()
         {
         }
 
@@ -33,7 +33,7 @@ namespace DillPickle.Framework.Runner
         {
         }
 
-        public virtual void Finalize()
+        public virtual void Finish()
         {
         }
     }

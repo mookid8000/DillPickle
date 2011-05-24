@@ -16,12 +16,12 @@ namespace DillPickle.Tests.Listeners
         public void FormatsThingsNicely()
         {
             var listener = new OpenDefaultTextOutputEventListener();
-            listener.Initialize();
+            listener.Prepare();
 
             ExecuteFeature(listener);
             ExecuteFeature(listener);
 
-            listener.Finalize();
+            listener.Finish();
 
             Assert.AreEqual(
 @"
@@ -88,12 +88,12 @@ namespace DillPickle.Tests.Listeners
         {
             Time.SetTime(DateTime.Today + TimeSpan.FromHours(10) + TimeSpan.FromMinutes(23) + TimeSpan.FromSeconds(55));
             var listener = new OpenDefaultTextOutputEventListener {ShowCurrentTimes = true};
-            listener.Initialize();
+            listener.Prepare();
 
             ExecuteFeature(listener);
             ExecuteFeature(listener);
 
-            listener.Finalize();
+            listener.Finish();
 
             Assert.AreEqual(
 @"

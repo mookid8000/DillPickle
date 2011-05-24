@@ -281,12 +281,12 @@ namespace DillPickle.Framework.Runner
 
         public void Commission()
         {
-            listeners.ForEach(l => l.Initialize());
+            listeners.ForEach(l => l.Prepare());
         }
 
         public void Decommission()
         {
-            listeners.ForEach(l => l.Finalize());
+            listeners.ForEach(l => l.Finish());
         }
 
         void ExecuteMethodsDecoratedWith<T>(IEnumerable<ActionStepsObjectHolder> collection) where T : HookAttribute

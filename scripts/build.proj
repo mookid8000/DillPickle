@@ -5,32 +5,53 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <BuildDestination>..\deploy</BuildDestination>
     <ToolsFolder>..\tools</ToolsFolder>
     <ScriptsFolder>..\scripts</ScriptsFolder>
     <IlMerge>$(ToolsFolder)\ilmerge\Ilmerge.exe</IlMerge>
     <zip>$(ToolsFolder)\7zip\7za.exe</zip>
+    <BuildRoot>..\deploy</BuildRoot>
+
+    <!-- Clear platform to ensure that project default is used -->
+    <Platform></Platform>
   </PropertyGroup>
 
-  <Target Name="build" DependsOnTargets="deleteBuildDestination;buildProjects;mergeBinaries" />
+  <PropertyGroup Condition="'$(fx)' == 'NET35'">
+    <BuildDestination>$(BuildRoot)\NET35</BuildDestination>
+    <DefineConstants>NET35</DefineConstants>
+    <PrettyVersion>NET3.5</PrettyVersion>
+  </PropertyGroup>
 
+  <PropertyGroup Condition="'$(fx)' == 'NET40'">
+    <BuildDestination>$(BuildRoot)\NET40</BuildDestination>
+    <DefineConstants>NET40</DefineConstants>
+    <PrettyVersion>NET4.0</PrettyVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ZipFileName>$(BuildRoot)\dill-$(PrettyVersion).zip</ZipFileName>
+  </PropertyGroup>
+
+  <Target Name="build" DependsOnTargets="showInfo;deleteBuildDestination;buildProjects;mergeBinaries"/>
+
+  <Target Name="showInfo">
+    <Message Text="Targeting $(fx)" Importance="high" />
+  </Target>
+  
   <Target Name="buildProjects">
-    <Message Text="Building projects in Release configuration"/>
-    <MSBuild Projects="@(Framework)" Targets="build" StopOnFirstFailure="true" Properties="Configuration=Release">
+    <MSBuild Projects="@(Framework)" Targets="build" StopOnFirstFailure="true" Properties="Configuration=$(fx);fx=$(fx))">
       <Output TaskParameter="TargetOutputs" ItemName="FrameworkOutput" />
     </MSBuild>
   </Target>
 
   <Target Name="deleteBuildDestination">
-    <Message Text="Removing build destination"/>
+    <Message Text="Removing build destination: $(BuildDestination)"/>
     <RemoveDir Directories="$(BuildDestination)" />
   </Target>
-  
+
   <Target Name="mergeBinaries">
     <Message Text="Merging binaries"/>
     <MakeDir Directories="$(BuildDestination)"/>
     <Exec Command="$(IlMerge) /out:$(BuildDestination)\dill.exe @(FrameworkOutput) @(GoCommando) /internalize:$(ScriptsFolder)\excluded_from_internalization.txt" />
-    <!--<Copy SourceFiles="" DestinationFolder="" />-->
-    <Exec Command="$(zip) a $(BuildDestination)\dill.zip $(BuildDestination)\*.* -tZip -mx=9" />
+    <Exec Command="$(zip) a $(ZipFileName) $(BuildDestination)\*.* -tZip -mx=9" />
   </Target>
 </Project>
