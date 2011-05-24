@@ -19,12 +19,14 @@
     <BuildDestination>$(BuildRoot)\NET35</BuildDestination>
     <DefineConstants>NET35</DefineConstants>
     <PrettyVersion>NET3.5</PrettyVersion>
+    <IlMergeTargetPlatform>v2</IlMergeTargetPlatform>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(fx)' == 'NET40'">
     <BuildDestination>$(BuildRoot)\NET40</BuildDestination>
     <DefineConstants>NET40</DefineConstants>
     <PrettyVersion>NET4.0</PrettyVersion>
+    <IlMergeTargetPlatform>v4</IlMergeTargetPlatform>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -51,7 +53,7 @@
   <Target Name="mergeBinaries">
     <Message Text="Merging binaries"/>
     <MakeDir Directories="$(BuildDestination)"/>
-    <Exec Command="$(IlMerge) /out:$(BuildDestination)\dill.exe @(FrameworkOutput) @(GoCommando) /internalize:$(ScriptsFolder)\excluded_from_internalization.txt" />
+    <Exec Command="$(IlMerge) /out:$(BuildDestination)\dill.exe @(FrameworkOutput) @(GoCommando) /internalize:$(ScriptsFolder)\excluded_from_internalization.txt /targetPlatform:$(IlMergeTargetPlatform)" />
     <Exec Command="$(zip) a $(ZipFileName) $(BuildDestination)\*.* -tZip -mx=9" />
   </Target>
 </Project>
