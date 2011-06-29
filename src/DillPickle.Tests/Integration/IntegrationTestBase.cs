@@ -11,6 +11,11 @@ namespace DillPickle.Tests.Integration
     {
         protected IList<FeatureResult> Run(string text, Type actionStepsType)
         {
+            return Run(text, actionStepsType, DefaultOptions());
+        }
+        
+        protected IList<FeatureResult> Run(string text, Type actionStepsType, RunnerOptions options)
+        {
             var parser = new StupidGherkinParser();
             var result = parser.Parse(text);
 
@@ -19,11 +24,11 @@ namespace DillPickle.Tests.Integration
                                            new IntelligentPropertySetter(new TrivialPropertySetter(), activator));
 
             return result.Features
-                .Select(f => runner.Run(f, new[] {actionStepsType}, NullFilter()))
+                .Select(f => runner.Run(f, new[] {actionStepsType}, options))
                 .ToList();
         }
 
-        RunnerOptions NullFilter()
+        RunnerOptions DefaultOptions()
         {
             return new RunnerOptions
                        {

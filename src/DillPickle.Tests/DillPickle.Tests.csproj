@@ -97,6 +97,7 @@
   <ItemGroup>
     <Compile Include="FixtureBase.cs" />
     <Compile Include="Infrastructure\TestMiniContainer.cs" />
+    <Compile Include="Integration\TestErrorScenario06.cs" />
     <Compile Include="Integration\IntegrationTestBase.cs" />
     <Compile Include="Integration\TestErrorScenario01.cs" />
     <Compile Include="Integration\TestErrorScenario02.cs" />

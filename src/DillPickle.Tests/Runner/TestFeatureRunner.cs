@@ -663,7 +663,6 @@ but was:
         {
             public static List<Dictionary<string, string>> Given;
             public static UserLoggedIn[] When;
-            public static List<Dictionary<string, string>> Then;
 
             [Given("the following users are created:")]
             public void GivenUsersAreCreated(List<Dictionary<string, string>> users)
