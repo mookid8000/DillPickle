@@ -57,7 +57,7 @@ namespace DillPickle.Tests.Runner
             var expectedOptions = new RunnerOptions
                                      {
                                          Filter = new TagFilter(new[] {"bom"}, new[] {"bim"}),
-                                         DruRun = false,
+                                         DryRun = false,
                                      };
 
             featureRunner.AssertWasCalled(r => r.Run(feature1, actionStepsTypes1, expectedOptions));
@@ -77,7 +77,7 @@ namespace DillPickle.Tests.Runner
             var expectedOptions = new RunnerOptions
                                       {
                                           Filter = TagFilter.Empty(),
-                                          DruRun = false,
+                                          DryRun = false,
                                           SuccessRequired = true,
                                       };
 
@@ -118,7 +118,7 @@ namespace DillPickle.Tests.Runner
             var expectedOptions = new RunnerOptions
                                       {
                                           Filter = TagFilter.Empty(),
-                                          DruRun = false,
+                                          DryRun = false,
                                           SuccessRequired = true,
                                       };
 

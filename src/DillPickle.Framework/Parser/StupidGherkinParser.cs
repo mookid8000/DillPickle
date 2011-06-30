@@ -10,6 +10,12 @@ namespace DillPickle.Framework.Parser
 {
     /// <summary>
     /// Encapsulates the parsing of Gherkin-text into a (pseudo-) AST.
+    /// 
+    /// OMG this parser is just getting uglier and uglier. 
+    /// 
+    /// It's a good thing I have unit tests.
+    /// 
+    /// Some day I'll replace this abominable class with something else, like e.g. an ANTLR-based parser or something.
     /// </summary>
     public class StupidGherkinParser : IGherkinParser
     {
@@ -110,7 +116,7 @@ namespace DillPickle.Framework.Parser
                     if (line.StartsWith(ScenarioIntroduction, Comparison))
                     {
                         var scenarioText = line.Substring(line.IndexOf(":") + 1).Trim();
-                        currentScenario = new ExecutableScenario(scenarioText, accumulatedTags.Concat(currentFeature.Tags));
+                        currentScenario = new ExecutableScenario(scenarioText, accumulatedTags);
                         accumulatedTags.Clear();
                         tableColumnNames.Clear();
                         currentFeature.Scenarios.Add(currentScenario);
@@ -122,7 +128,7 @@ namespace DillPickle.Framework.Parser
                     if (line.StartsWith(ScenarioOutlineIntroduction, Comparison))
                     {
                         var scenarioText = line.Substring(line.IndexOf(":") + 1).Trim();
-                        currentScenario = new ScenarioOutline(scenarioText, accumulatedTags.Concat(currentFeature.Tags));
+                        currentScenario = new ScenarioOutline(scenarioText, accumulatedTags);
                         accumulatedTags.Clear();
                         tableColumnNames.Clear();
                         currentFeature.Scenarios.Add(currentScenario);

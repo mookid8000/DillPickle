@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DillPickle.Framework.Exceptions;
 using DillPickle.Framework.Parser.Api;
@@ -360,6 +359,18 @@ Feature: Some terse yet descriptive text of what is desired
      Given some precondition
       When some action by the actor
       Then some testable outcome is achieved
+
+    @alsoimportant
+   Scenario: A different situation
+     Given some precondition
+      When some action by the actor
+      Then some testable outcome is achieved
+
+    @alsoalsoimportant
+   Scenario: A different situation
+     Given some precondition
+      When some action by the actor
+      Then some testable outcome is achieved
 ");
 
             var feature = result.Features[0];
@@ -369,13 +380,23 @@ Feature: Some terse yet descriptive text of what is desired
             Assert.AreEqual("business", tags[0]);
             Assert.AreEqual("something", tags[1]);
 
-            var scenario = feature.Scenarios[0];
+            var scenario1 = feature.Scenarios[0];
 
-            tags = scenario.Tags.OrderBy(t => t).ToList();
-            Assert.AreEqual(3, tags.Count);
-            Assert.AreEqual("business", tags[0]);
-            Assert.AreEqual("important", tags[1]);
-            Assert.AreEqual("something", tags[2]);
+            tags = scenario1.Tags.OrderBy(t => t).ToList();
+            Assert.AreEqual(1, tags.Count);
+            Assert.AreEqual("important", tags[0]);
+
+            var scenario2 = feature.Scenarios[1];
+
+            tags = scenario2.Tags.OrderBy(t => t).ToList();
+            Assert.AreEqual(1, tags.Count);
+            Assert.AreEqual("alsoimportant", tags[0]);
+
+            var scenario3 = feature.Scenarios[2];
+
+            tags = scenario3.Tags.OrderBy(t => t).ToList();
+            Assert.AreEqual(1, tags.Count);
+            Assert.AreEqual("alsoalsoimportant", tags[0]);
         }
 
         [Test]
@@ -478,17 +499,16 @@ Feature: Some terse yet descriptive text of what is desired
             var feature1 = result.Features[0];
             Assert.AreEqual(2, feature1.Tags.Count);
 
-            Assert.AreEqual(3, feature1.Scenarios[0].Tags.Count);
+            Assert.AreEqual(1, feature1.Scenarios[0].Tags.Count);
             Assert.IsTrue(feature1.Scenarios[0].Tags.Any(t => t == "important"));
-            Assert.AreEqual(3, feature1.Scenarios[1].Tags.Count);
+            Assert.AreEqual(1, feature1.Scenarios[1].Tags.Count);
             Assert.IsTrue(feature1.Scenarios[1].Tags.Any(t => t == "notImportant"));
 
             var feature2 = result.Features[1];
             Assert.AreEqual(1, feature2.Tags.Count);
             Assert.IsTrue(feature1.Tags.Any(t => t == "something"));
 
-            Assert.AreEqual(1, feature2.Scenarios[0].Tags.Count);
-            Assert.IsTrue(feature2.Scenarios[0].Tags.Any(t => t == "something"));
+            Assert.AreEqual(0, feature2.Scenarios[0].Tags.Count);
         }
 
         [Test]

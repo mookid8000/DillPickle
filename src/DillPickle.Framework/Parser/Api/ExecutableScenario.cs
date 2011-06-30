@@ -4,7 +4,7 @@ namespace DillPickle.Framework.Parser.Api
 {
     public class ExecutableScenario : Scenario
     {
-        public ExecutableScenario(string headline, IEnumerable<string> accumulatedTags) : base(headline, accumulatedTags)
+        public ExecutableScenario(string headline, IEnumerable<string> scenarioTags) : base(headline, scenarioTags)
         {
         }
 

@@ -43,7 +43,7 @@ namespace DillPickle.Framework.Runner
                                                                  FeatureFileName = fileName,
                                                                  Feature = f
                                                              }))
-                .Where(f => filter.IsSatisfiedBy(f.Feature.Tags));
+                .Where(f => f.Feature.ShouldBeIncluded(filter));
 
             Console.WriteLine("Found {0} features containing {1} executable scenarios", featuresToRun.Count(),
                               featuresToRun.Sum(f => f.Feature.Scenarios.Count));
@@ -58,7 +58,7 @@ namespace DillPickle.Framework.Runner
             var options = new RunnerOptions
                               {
                                   Filter = filter,
-                                  DruRun = arguments.DruRun,
+                                  DryRun = arguments.DryRun,
                                   SuccessRequired = arguments.SuccessRequired,
                               };
 

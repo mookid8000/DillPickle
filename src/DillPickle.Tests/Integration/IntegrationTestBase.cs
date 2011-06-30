@@ -33,7 +33,7 @@ namespace DillPickle.Tests.Integration
             return new RunnerOptions
                        {
                            Filter = TagFilter.Empty(),
-                           DruRun = false,
+                           DryRun = false,
                        };
         }
     }

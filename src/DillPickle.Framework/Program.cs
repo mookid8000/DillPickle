@@ -89,7 +89,7 @@ Check out http://mookid.dk/oncode/dillpickle for more information.
                                    FeaturePattern = FeaturePattern,
                                    TagsToInclude = Split(Include),
                                    TagsToExclude = Split(Exclude),
-                                   DruRun = DryRun,
+                                   DryRun = DryRun,
                                    SuccessRequired = SuccessRequired,
                                    ShowCurrentTime = ShowCurrentTime,
                                    TextOutputFile = TextOutputFile,

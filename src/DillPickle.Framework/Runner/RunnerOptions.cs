@@ -1,6 +1,8 @@
+using System;
+
 namespace DillPickle.Framework.Runner
 {
-    public class RunnerOptions
+    public class RunnerOptions : IEquatable<RunnerOptions>
     {
         public RunnerOptions()
         {
@@ -8,15 +10,14 @@ namespace DillPickle.Framework.Runner
         }
 
         public TagFilter Filter { get; set; }
-        public bool DruRun { get; set; }
-
+        public bool DryRun { get; set; }
         public bool SuccessRequired { get; set; }
 
         public bool Equals(RunnerOptions other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(other.Filter, Filter) && other.DruRun.Equals(DruRun);
+            return Equals(other.Filter, Filter) && other.DryRun.Equals(DryRun) && other.SuccessRequired.Equals(SuccessRequired);
         }
 
         public override bool Equals(object obj)
@@ -31,8 +32,21 @@ namespace DillPickle.Framework.Runner
         {
             unchecked
             {
-                return ((Filter != null ? Filter.GetHashCode() : 0)*397) ^ DruRun.GetHashCode();
+                int result = (Filter != null ? Filter.GetHashCode() : 0);
+                result = (result*397) ^ DryRun.GetHashCode();
+                result = (result*397) ^ SuccessRequired.GetHashCode();
+                return result;
             }
+        }
+
+        public static bool operator ==(RunnerOptions left, RunnerOptions right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(RunnerOptions left, RunnerOptions right)
+        {
+            return !Equals(left, right);
         }
     }
 }

@@ -45,7 +45,11 @@ namespace DillPickle.Framework.Runner
             {
                 BeforeFeature(feature, executionObjects);
 
-                foreach (var scenario in feature.Scenarios.SelectMany(s => s.GetExecutableScenarios()).Where(s => filter.IsSatisfiedBy(s.Tags)))
+                var executableScenarios = feature.Scenarios
+                    .SelectMany(scenario => scenario.GetExecutableScenarios())
+                    .Where(scenario => scenario.ShouldBeIncluded(filter));
+
+                foreach (var scenario in executableScenarios)
                 {
                     BeforeScenario(feature, scenario, executionObjects);
                     var result = ExecuteScenario(scenario, feature, matches, executionObjects, options);
@@ -146,7 +150,7 @@ namespace DillPickle.Framework.Runner
                     var parameters = GenerateParameterList(method.ActionStepMethod, method.StepMatch);
                     var methodInfo = method.ActionStepMethod.MethodInfo;
 
-                    if (!options.DruRun)
+                    if (!options.DryRun)
                     {
                         methodInfo.Invoke(targetObject, parameters);
                     }

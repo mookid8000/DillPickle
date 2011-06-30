@@ -11,18 +11,32 @@ namespace DillPickle.Framework.Runner
 
         public TagFilter(string[] tagsToInclude, string[] tagsToExclude)
         {
-            this.tagsToInclude = tagsToInclude;
-            this.tagsToExclude = tagsToExclude;
+            this.tagsToInclude = tagsToInclude ?? new string[0];
+            this.tagsToExclude = tagsToExclude ?? new string[0];
         }
 
-        public bool IsSatisfiedBy(IEnumerable<string> tags)
+        //public bool IsSatisfiedBy(IEnumerable<string> tags)
+        //{
+        //    var yes = true;
+
+        //    yes &= tagsToInclude.Intersect(tags).Any() || !tagsToInclude.Any();
+        //    yes &= !tagsToExclude.Intersect(tags).Any() || !tagsToExclude.Any();
+
+        //    return yes;
+        //}
+
+        public bool Includes(IEnumerable<string> tags)
         {
-            var yes = true;
+            return tagsToInclude.Length == 0
+                       ? true
+                       : tagsToInclude.Intersect(tags).Any();
+        }
 
-            yes &= tagsToInclude.Intersect(tags).Any() || !tagsToInclude.Any();
-            yes &= !tagsToExclude.Intersect(tags).Any() || !tagsToExclude.Any();
-
-            return yes;
+        public bool Excludes(IEnumerable<string> tags)
+        {
+            return tagsToExclude.Length == 0
+                ? false
+                : tagsToExclude.Intersect(tags).Any();
         }
 
         public bool Equals(TagFilter other)

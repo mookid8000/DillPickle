@@ -161,7 +161,7 @@ namespace DillPickle.Tests.Runner
             return new RunnerOptions
                        {
                            Filter = new TagFilter(new[] {"tag"}, NoTags()),
-                           DruRun = false,
+                           DryRun = false,
                        };
         }
 
@@ -298,7 +298,7 @@ but was:
             return new RunnerOptions
                        {
                            Filter = TagFilter.Empty(),
-                           DruRun = false,
+                           DryRun = false,
                        };
         }
 
@@ -590,7 +590,7 @@ but was:
                                       }
                               };
 
-            runner.Run(feature, new[] {typeof (ClassWithActionSteps)}, new RunnerOptions {DruRun = true});
+            runner.Run(feature, new[] {typeof (ClassWithActionSteps)}, new RunnerOptions {DryRun = true});
 
             Assert.AreEqual(0, ClassWithActionSteps.GivenCalls);
             Assert.AreEqual(0, ClassWithActionSteps.WhenCalls);

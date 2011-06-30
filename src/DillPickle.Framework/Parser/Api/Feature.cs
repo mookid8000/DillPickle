@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using DillPickle.Framework.Runner;
 
 namespace DillPickle.Framework.Parser.Api
 {
@@ -12,10 +14,10 @@ namespace DillPickle.Framework.Parser.Api
         readonly List<string> tags = new List<string>();
         readonly List<Step> backgroundSteps = new List<Step>();
 
-        public Feature(string headline, IEnumerable<string> accumulatedTags)
+        public Feature(string headline, IEnumerable<string> featureTags)
         {
             this.headline = headline;
-            tags.AddRange(accumulatedTags);
+            tags.AddRange(featureTags);
         }
 
         public List<Scenario> Scenarios
@@ -56,6 +58,12 @@ namespace DillPickle.Framework.Parser.Api
         public override string ToString()
         {
             return string.Format("Feature: {0} ({1})", headline, tags.JoinToString(","));
+        }
+
+        public bool ShouldBeIncluded(TagFilter filter)
+        {
+            return (filter.Includes(Tags) || Scenarios.Any(s => s.ShouldBeIncluded(filter)))
+                   && !filter.Excludes(Tags);
         }
     }
 }

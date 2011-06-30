@@ -5,7 +5,7 @@ namespace DillPickle.Framework.Parser.Api
 {
     public class ScenarioOutline : Scenario
     {
-        public ScenarioOutline(string headline, IEnumerable<string> accumulatedTags) : base(headline, accumulatedTags)
+        public ScenarioOutline(string headline, IEnumerable<string> scenarioTags) : base(headline, scenarioTags)
         {
             Examples = new List<Dictionary<string, string>>();
         }
@@ -14,7 +14,7 @@ namespace DillPickle.Framework.Parser.Api
 
         public override List<ExecutableScenario> GetExecutableScenarios()
         {
-            return Examples.Select(ex => GenerateExecutableScenarioFor(ex)).ToList();
+            return Examples.Select(GenerateExecutableScenarioFor).ToList();
         }
 
         ExecutableScenario GenerateExecutableScenarioFor(Dictionary<string, string> dictionary)

@@ -7,6 +7,29 @@ namespace DillPickle.Tests.Runner
     public class TestTagFilter
     {
         [Test]
+        public void EmptyFilterIncludesEverythingExcludesNothing()
+        {
+            Assert.IsTrue(new TagFilter(new string[0], new string[0]).Includes(new[] {"current", "bam"}));
+            Assert.IsFalse(new TagFilter(new string[0], new string[0]).Excludes(new[] {"current", "bam"}));
+        }
+
+        [Test]
+        public void FilterInclusionWorks()
+        {
+            Assert.IsTrue(new TagFilter(new[] {"current", "bam"}, new string[0]).Includes(new[] {"current", "bam"}));
+            Assert.IsTrue(new TagFilter(new[] {"current"}, new string[0]).Includes(new[] {"current", "bam"}));
+            Assert.IsFalse(new TagFilter(new[] {"something_else"}, new string[0]).Includes(new[] {"current", "bam"}));
+        }
+
+        [Test]
+        public void FilterExclusionWorks()
+        {
+            Assert.IsTrue(new TagFilter(new string[0], new[] {"current", "bam"}).Excludes(new[] {"current", "bam"}));
+            Assert.IsTrue(new TagFilter(new string[0], new[] {"current"}).Excludes(new[] {"current", "bam"}));
+            Assert.IsFalse(new TagFilter(new string[0], new[] {"something_else"}).Excludes(new[] {"current", "bam"}));
+        }
+
+        [Test]
         public void CanCompareFilters()
         {
             AssertEqual(TagFilter.Empty(),

@@ -15,3 +15,16 @@ Feature: DillPickle should work
       | number1 | number2 | number3 |
       | 20      | 39      | 59      |
       | 50      | 50      | 100     |
+
+  @yet_another_tag
+  Scenario outline:
+    Given I type <number1>
+    When I press + followed by <number2>
+      and I press =
+    Then I see <number3> in the display
+    
+    Examples:
+      | number1 | number2 | number3 |
+      | 20      | 39      | 59      |
+      | 50      | 50      | 100     |
+
