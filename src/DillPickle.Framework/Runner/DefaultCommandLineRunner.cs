@@ -92,7 +92,10 @@ namespace DillPickle.Framework.Runner
             {
                 Console.WriteLine("Outputting results to {0}", arguments.TextOutputFile);
 
-                featureRunner.AddListener(new TextFileOutputEventListener(arguments.TextOutputFile));
+                featureRunner.AddListener(new TextFileOutputEventListener(arguments.TextOutputFile)
+                                              {
+                                                  ShowCurrentTimes = arguments.ShowCurrentTime,
+                                              });
             }
         }
     }
