@@ -7,9 +7,11 @@
   <PropertyGroup>
     <ToolsFolder>..\tools</ToolsFolder>
     <ScriptsFolder>..\scripts</ScriptsFolder>
+    <BuildRoot>..\deploy</BuildRoot>
+
     <IlMerge>$(ToolsFolder)\ilmerge\Ilmerge.exe</IlMerge>
     <zip>$(ToolsFolder)\7zip\7za.exe</zip>
-    <BuildRoot>..\deploy</BuildRoot>
+    <NuGet>$(ToolsFolder)\NuGet\NuGet.exe</NuGet>
 
     <!-- Clear platform to ensure that project default is used -->
     <Platform></Platform>
@@ -33,7 +35,13 @@
     <ZipFileName>$(BuildRoot)\dill-$(PrettyVersion).zip</ZipFileName>
   </PropertyGroup>
 
-  <Target Name="build" DependsOnTargets="showInfo;deleteBuildDestination;buildProjects;mergeBinaries"/>
+  <Target Name="build">
+    <MSBuild Projects="$(MSBuildProjectFile)" Targets="buildForFx" Properties="fx=NET35"/>
+    <MSBuild Projects="$(MSBuildProjectFile)" Targets="buildForFx" Properties="fx=NET40"/>
+    <CallTarget Targets="createNugetPackage"/>
+  </Target>
+  
+  <Target Name="buildForFx" DependsOnTargets="showInfo;deleteBuildDestination;buildProjects;mergeBinaries"/>
 
   <Target Name="showInfo">
     <Message Text="Targeting $(fx)" Importance="high" />
@@ -55,5 +63,11 @@
     <MakeDir Directories="$(BuildDestination)"/>
     <Exec Command="$(IlMerge) /out:$(BuildDestination)\dill.exe @(FrameworkOutput) @(GoCommando) /internalize:$(ScriptsFolder)\excluded_from_internalization.txt /targetPlatform:$(IlMergeTargetPlatform)" />
     <Exec Command="$(zip) a $(ZipFileName) $(BuildDestination)\*.* -tZip -mx=9" />
+  </Target>
+
+  <Target Name="createNugetPackage">
+    <Message Text="Creating NuGet package"/>
+
+    <Exec Command="$(NuGet) pack $(ScriptsFolder)\dillpickle.nuspec -OutputDirectory $(BuildRoot)"/>
   </Target>
 </Project>

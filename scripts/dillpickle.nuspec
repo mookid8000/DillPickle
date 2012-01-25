@@ -1,0 +1,23 @@
+<?xml version='1.0'?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>DillPickle</id>
+    <version>1.0.0.3</version>
+    <authors>Mogens Heller Grabe</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>http://mookid.dk/oncode/dillpickle</projectUrl>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <tags>dillpickle bdd gherkin cucumber</tags>
+    
+    <description>
+      DillPickle is a simple BDD framework that understands the Gherkin feature syntax.
+
+      mookid8000@gmail.com
+      http://mookid.dk/oncode
+    </description>
+  </metadata>
+
+  <files>
+    <file src="..\deploy\**\dill.exe"/>
+  </files>
+</package>
