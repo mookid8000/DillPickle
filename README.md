@@ -101,9 +101,10 @@ Now, if you add some empty stubs for `VisualStudioAutomation` and `HappinessMeas
 it should be possible to compile & run the scenario. All steps should be green, except the last one (depending on the value returned by 
 `HappinessMeasurement.CurrentValue` of course).
 
-This demonstrates how testing can be done on a high level of abstraction, in a specification language that is undestandable by
+This demonstrates how testing can be done on a high level of abstraction, in a specification language that is understandable by
 business people. It also demonstrates that _your job_ is to write this stuff, and then build the bridge between the action steps in the
-feature file and the actual business logic.
+feature file and the actual business logic. In my experience, this is done best with the action steps as mediators, and then some
+custom built bridge that automates your application or whatever module you want to test.
 
 Now, go do the actual implementation of `VisualStudioAutomation` and `HappinessMeasurement`... :)
 
