@@ -4,17 +4,12 @@
     <id>DillPickle</id>
     <version>1.0.0.3</version>
     <authors>Mogens Heller Grabe</authors>
+    <owners>Mogens Heller Grabe</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectUrl>http://mookid.dk/oncode/dillpickle</projectUrl>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
-    <tags>dillpickle bdd gherkin cucumber</tags>
-    
-    <description>
-      DillPickle is a simple BDD framework that understands the Gherkin feature syntax.
-
-      mookid8000@gmail.com
-      http://mookid.dk/oncode
-    </description>
+    <tags>dillpickle bdd gherkin cucumber .net35 .net40</tags>
+    <description>DillPickle is a simple BDD framework that understands the Gherkin feature syntax.</description>
   </metadata>
 
   <files>
