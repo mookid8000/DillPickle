@@ -84,8 +84,10 @@ This should result in a couple of YELLOW "pending" action steps being output to 
 
 		if (experiencedIncreaseInPercent < percentage)
 		{
-			throw new AssertionException("Expected a {0:0.0} % increase, but happiness only rose from {1} to {2} => {3:0.0} %!",
+			var msg = string.Format("Expected {0:0.0} % increase, but happiness only rose from {1} to {2}! ({3:0.0} %)",
 				percentage, happinessBefore, happinessNow, experiencedIncreaseInPercent);
+
+			throw new AssertionException(msg);
 		}
 	}
 
