@@ -80,12 +80,12 @@ This should result in a couple of YELLOW "pending" action steps being output to 
 	public void AssertHappinessIncrease(double percentage)
 	{
 		var happinessNow = HappinessMeasurement.CurrentValue;
-		var experiencesIncreaseInPercent = 100 * happinessNow / happinessBefore;
+		var experiencedIncreaseInPercent = 100 * happinessNow / happinessBefore;
 
-		if (experiencesIncreaseInPercent < percentage)
+		if (experiencedIncreaseInPercent < percentage)
 		{
 			throw new AssertionException("Expected a {0:0.0} % increase, but happiness only rose from {1} to {2} => {3:0.0} %!",
-				percentage, happinessBefore, happinessNow, experiencesIncreaseInPercent);
+				percentage, happinessBefore, happinessNow, experiencedIncreaseInPercent);
 		}
 	}
 
