@@ -4,6 +4,7 @@ using DillPickle.Framework.Exceptions;
 using DillPickle.Framework.Parser.Api;
 using NUnit.Framework;
 using DillPickle.Framework.Parser;
+using Shouldly;
 
 namespace DillPickle.Tests.Parser
 {
@@ -15,6 +16,114 @@ namespace DillPickle.Tests.Parser
         public override void DoSetUp()
         {
             parser = new StupidGherkinParser();
+        }
+
+        [Test]
+        public void CanParseThis()
+        {
+            var text = @"
+Feature: Distribution with energy constraints
+    Verifies that the energy constraints are taken into account when distributing.
+
+    Background:
+        Given that the test site exists
+        And test site has CMO horizon of 2 hours
+        And the site has reserve configurations UF as FNR_UF and OF as FNR_OF
+
+        And the following generic local units:
+            | Alias         | TechMin   | TechMax   | ForecastMin   | ForecastMax   | EstMaxCap         | ObsMin    | ObsMax    | ProdOrConsCost    | MaxRuntime    | MinRuntime    | MinDowntime   | FCmoAndBaseloadSample | ShutdownCost  | StartupCost   | DeltaUfMaxJump    | DeltaOfMaxJump    | RateOfChangePenaltyWeight |
+            | TST_REG01_LU01| 100 kW    | 300 kW    | 0 kW          | 0 kW          | 1000000000 kWh    | 0         | 10        | 1                 | 1000000000 s  | 0 s           | 0 s           | 0 Hz                  | 1             | 1             | 200 kW            | 200 kW            | 0.1                       |
+
+        And localunit TST_REG01_LU01 is using FNR_UF and FNR_OF
+
+        Given site spot price forecast from now local time and forward:
+            |MarketName | Time          | Price     | 
+            |Baseload   | 0:00          | 300       |       
+            |FNR_UF     | 0:00          | 800       |       
+            |FNR_OF     | 0:00          | 800       |
+
+        Given the following site plan values:
+            | MarketName    | Time  | Power     |
+            | Baseload      | 0:00  | 0 MW      |
+            | FNR_UF        | 0:00  | 0.5 MW    |
+            | FNR_OF        | 0:00  | 0.5 MW    |
+
+        And the following site configuration:
+            | DistributionAlgorithm | PriceOverProduction   | PriceUnderProduction  | PricePerKwhViolationOfLuEnergyLimit   | NumberOfPlanValues    | PricePerKwMissingPrimaryReserve   | 
+            | Advanced              | 1000                  | 2000                  | 10000                                 | 24                    | 10000                             | 
+
+    Scenario: Acceptance tests";
+
+            var result = parser.Parse(text);
+        }
+
+        [Test]
+        public void DoesntMixTables()
+        {
+            var text =
+                @"Background:
+    Given that the test site exists
+    And test site has CMO horizon of 2 hours
+    And the site has reserve configurations UF as FNR_UF and OF as FNR_OF
+
+    And the following generic local units:
+        | Alias         | TechMin   | TechMax   | ForecastMin   | ForecastMax   | EstMaxCap         | ObsMin    | ObsMax    | ProdOrConsCost    | MaxRuntime    | MinRuntime    | MinDowntime   | FCmoAndBaseloadSample | ShutdownCost  | StartupCost   | DeltaUfMaxJump    | DeltaOfMaxJump    | RateOfChangePenaltyWeight |
+        | TST_REG01_LU01| 100 kW    | 300 kW    | 0 kW          | 0 kW          | 1000000000 kWh    | 0         | 10        | 1                 | 1000000000 s  | 0 s           | 0 s           | 0 Hz                  | 1             | 1             | 200 kW            | 200 kW            | 0.1                       |
+
+    And localunit TST_REG01_LU01 is using FNR_UF and FNR_OF
+
+    And site spot price forecast from now local time and forward:
+        |MarketName | Time          | Price     | 
+        |Baseload   | 0:00          | 300       |       
+        |FNR_UF     | 0:00          | 800       |       
+        |FNR_OF     | 0:00          | 800       |       
+
+Scenario: Acceptance tests
+    Given the following site configuration:
+        | DistributionAlgorithm | PriceOverProduction   | PriceUnderProduction  | PricePerKwhViolationOfLuEnergyLimit   | NumberOfPlanValues    | PricePerKwMissingPrimaryReserve   | 
+        | Advanced              | 1000                  | 2000                  | 10000                                 | 24                    | 10000                             | ";
+
+            var result = parser.Parse(text);
+
+            result.Features.Count.ShouldBe(1);
+            var feature = result.Features[0];
+
+            feature.BackgroundSteps.Count.ShouldBe(6);
+            var firstStepWithTable = feature.BackgroundSteps[3];
+            var nextStepWithTable = feature.BackgroundSteps[5];
+
+            firstStepWithTable.Parameters.Count.ShouldBe(1);
+
+            firstStepWithTable.Text.ShouldBe("the following generic local units:");
+            AssertColumnNames(firstStepWithTable, "Alias", "TechMin", "TechMax", "ForecastMin", "ForecastMax",
+                              "EstMaxCap", "ObsMin", "ObsMax", "ProdOrConsCost", "MaxRuntime",
+                              "MinRuntime", "MinDowntime", "FCmoAndBaseloadSample", "ShutdownCost",
+                              "StartupCost", "DeltaUfMaxJump", "DeltaOfMaxJump", "RateOfChangePenaltyWeight");
+
+            nextStepWithTable.Text.ShouldBe("site spot price forecast from now local time and forward:");
+            AssertColumnNames(nextStepWithTable, "MarketName", "Time", "Price");
+        }
+
+        private void AssertColumnNames(Step step, params string[] expectedColumnNames)
+        {
+            var firstDictionary = step.Parameters.FirstOrDefault();
+            firstDictionary.ShouldNotBe(null);
+
+            var actualColumnNames = firstDictionary.Keys;
+
+            var inExcess = actualColumnNames.Except(expectedColumnNames);
+            var missing = expectedColumnNames.Except(actualColumnNames);
+
+            if (inExcess.Any() || missing.Any())
+            {
+                Assert.Fail(@"The following column names were in excess:
+
+{0}
+
+The following column names were missing:
+
+{1}", string.Join(", ", inExcess), string.Join(", ", missing));
+            }
         }
 
         [Test]
