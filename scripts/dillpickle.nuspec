@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>DillPickle</id>
-    <version>1.0.0.4</version>
+    <version>1.0.0.5</version>
     <authors>Mogens Heller Grabe</authors>
     <owners>Mogens Heller Grabe</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
